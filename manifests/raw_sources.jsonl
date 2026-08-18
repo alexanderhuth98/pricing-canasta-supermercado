@@ -1,0 +1,7 @@
+{"bytes":324854415,"path":"data/raw/2026-07-27/sepa_lunes.zip","sha256":"b21a4ea1b630bc7cdb9c48f42cc2f0cab348651fb11d8c81fff8f7b7407c023c","snapshot_date":"2026-07-27","slot":"lunes"}
+{"bytes":315586804,"path":"data/raw/2026-07-28/sepa_martes.zip","sha256":"4a20dbb27c8ba5fd00986770e241da641d41aa4d4c1c419a72540d38f8c1c9c3","snapshot_date":"2026-07-28","slot":"martes"}
+{"bytes":324781971,"path":"data/raw/2026-07-29/sepa_miercoles.zip","sha256":"0241e9b029d6bfff0df215ed8f8cce092779b4e634a73f7554161cac1c38546e","snapshot_date":"2026-07-29","slot":"miercoles"}
+{"bytes":334537023,"path":"data/raw/2026-07-30/sepa_jueves.zip","sha256":"44e0e27e705fdb99b7a1895090154c5bdf3dcb033363bea973d6e37a6ca3b87a","snapshot_date":"2026-07-30","slot":"jueves"}
+{"bytes":332261703,"path":"data/raw/2026-07-31/sepa_viernes.zip","sha256":"f61431f3d301c968d7959ade70f5861b2b066858638f33704de04b9a62d21526","snapshot_date":"2026-07-31","slot":"viernes"}
+{"bytes":235374440,"path":"data/raw/2026-08-01/sepa_sabado.zip","sha256":"0851b634143b6156e08bd1e9823688db16746fa0b5059699bcd9e0cd6b90c25e","snapshot_date":"2026-08-01","slot":"sabado"}
+{"bytes":327315760,"path":"data/raw/2026-08-02/sepa_domingo.zip","sha256":"2dd70ccae2ce2181ab86a2e37c9cca2a98cceac0422b0865ad4a895d73240972","snapshot_date":"2026-08-02","slot":"domingo"}

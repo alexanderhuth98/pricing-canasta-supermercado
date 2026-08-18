@@ -1,0 +1,42 @@
+* text=auto
+
+*.py text eol=lf
+*.sql text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.txt text eol=lf
+*.json text eol=lf
+*.jsonl text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.cff text eol=lf
+*.csv text eol=lf
+*.dax text eol=lf
+*.bim text eol=lf
+*.pbip text eol=lf
+*.pbir text eol=lf
+*.pbism text eol=lf
+*.html text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.python-version text eol=lf
+LICENSE text eol=lf
+
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.xlsx binary
+*.pbix binary
+*.pbit binary
+*.parquet binary
+*.duckdb binary
+*.zip binary
+*.abf binary
+
+portfolio_data/*.csv linguist-generated=true
+site/*.html linguist-generated=true
+powerbi/PricingCanasta.Report/** linguist-generated=true
+powerbi/PricingCanasta.SemanticModel/model.bim linguist-generated=true

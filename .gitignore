@@ -1,0 +1,78 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Raw, interim and analytical storage
+/data/
+*.duckdb
+*.duckdb.*
+*.parquet
+*.zip
+*.part
+*.tmp
+*.wal
+
+# Generated local deliverables; publish these as GitHub Release assets
+/outputs/*
+!/outputs/README.md
+*.xlsx
+~$*.xlsx
+*.pbix
+*.pbit
+*.abf
+
+# Curated public data allowlist
+/portfolio_data/*
+!/portfolio_data/README.md
+!/portfolio_data/banner_health.csv
+!/portfolio_data/banner_overlap.csv
+!/portfolio_data/basket_banner.csv
+!/portfolio_data/basket_banner_province.csv
+!/portfolio_data/basket_candidate_review.csv
+!/portfolio_data/basket_definition.csv
+!/portfolio_data/basket_national.csv
+!/portfolio_data/basket_province.csv
+!/portfolio_data/basket_savings.csv
+!/portfolio_data/dispersion_entity.csv
+!/portfolio_data/index_7d.csv
+!/portfolio_data/index_daily.csv
+!/portfolio_data/index_drivers.csv
+!/portfolio_data/index_sensitivity.csv
+!/portfolio_data/quality_checks.csv
+!/portfolio_data/quality_daily.csv
+!/portfolio_data/source_health.csv
+
+# Power BI local state
+**/.pbi/
+
+# Logs, editor settings and operating-system files
+*.log
+*.bak
+*.orig
+*.swp
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini

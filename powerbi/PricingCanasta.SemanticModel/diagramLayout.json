@@ -1,0 +1,190 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1302.1813587398512,
+            "y": 650.37917136192823
+          },
+          "nodeIndex": "Medidas",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 497.60207969129817
+          },
+          "nodeIndex": "banner_health",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 587.35896926049827,
+            "y": -50
+          },
+          "nodeIndex": "basket_banner",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1586.1813587398512,
+            "y": 650.37917136192823
+          },
+          "nodeIndex": "basket_definition",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 970.82145424648616,
+            "y": 929.43515964915366
+          },
+          "nodeIndex": "basket_province",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 680.95259238177835,
+            "y": 1151.9582117947302
+          },
+          "nodeIndex": "basket_savings",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 588.55767363985251,
+            "y": 571.24747917184607
+          },
+          "nodeIndex": "Calendario",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 148.42466293494149,
+            "y": 897.57664026531052
+          },
+          "nodeIndex": "dispersion_entity",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1870.1813587398512,
+            "y": 650.37917136192823
+          },
+          "nodeIndex": "index_7d",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 391.92710434159108,
+            "y": 1250.7583427238565
+          },
+          "nodeIndex": "index_daily",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 298.49397405463088,
+            "y": 140.399514749118
+          },
+          "nodeIndex": "index_drivers",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1068.1813587398515,
+            "y": 572.21571063448562
+          },
+          "nodeIndex": "index_sensitivity",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2154.181358739851,
+            "y": 700.37917136192823
+          },
+          "nodeIndex": "quality_checks",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 873.39403722421275,
+            "y": 215.0116186125199
+          },
+          "nodeIndex": "source_health",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas las tablas",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas las tablas",
+  "defaultDiagram": "Todas las tablas"
+}

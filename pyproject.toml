@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pricing-canasta-supermercado"
+version = "2.0.0"
+description = "Pipeline reproducible para analizar precios y una canasta comparable de supermercados en Argentina."
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [{name = "Alexander Huth"}]
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "duckdb==1.5.5",
+    "openpyxl==3.1.5",
+    "pandas==2.3.3",
+    "plotly==6.9.0",
+    "pyarrow==24.0.0",
+    "requests==2.34.2",
+    "urllib3==2.7.0",
+]
+
+[project.scripts]
+pricing-canasta = "pricing_canasta.pipeline:main"
+
+[project.urls]
+Homepage = "https://alexanderhuth98.github.io/pricing-canasta-supermercado/"
+Repository = "https://github.com/alexanderhuth98/pricing-canasta-supermercado"
+Documentation = "https://github.com/alexanderhuth98/pricing-canasta-supermercado/tree/main/docs"
+Issues = "https://github.com/alexanderhuth98/pricing-canasta-supermercado/issues"
+
+[project.optional-dependencies]
+dev = [
+    "coverage==7.10.7",
+    "pytest==9.1.1",
+    "pytest-cov==7.0.0",
+    "ruff==0.12.12",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider --strict-markers"
+
+[tool.coverage.run]
+branch = true
+source = ["pricing_canasta"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 80
+exclude_also = ["if __name__ == .__main__.:"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]

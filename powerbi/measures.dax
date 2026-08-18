@@ -1,0 +1,172 @@
+Indice precio =
+MEDIAN(index_daily[price_index])
+
+GTIN comunes ultimo dia =
+VAR Fecha = MAXX(ALL(index_daily), index_daily[snapshot_date])
+RETURN
+    CALCULATE(
+        MIN(index_daily[common_gtins]),
+        index_daily[snapshot_date] = Fecha
+    )
+
+Indice semanal =
+MEDIAN(index_7d[geometric_mean_index])
+
+Sensibilidad maxima =
+MAX(index_sensitivity[sensitivity_delta])
+
+Costo canasta ultimo corte =
+VAR Fecha = MAXX(ALL(basket_banner), basket_banner[snapshot_date])
+RETURN
+    CALCULATE(
+        MEDIAN(basket_banner[branch_median_cost]),
+        basket_banner[snapshot_date] = Fecha,
+        basket_banner[coverage_status] = "PUBLISHABLE"
+    )
+
+Costo canasta provincia =
+VAR Fecha = MAXX(ALL(basket_province), basket_province[snapshot_date])
+RETURN
+    CALCULATE(
+        MEDIAN(basket_province[branch_median_cost]),
+        basket_province[snapshot_date] = Fecha,
+        basket_province[coverage_status] = "PUBLISHABLE"
+    )
+
+Sucursales canasta completa =
+VAR Fecha = MAXX(ALL(basket_banner), basket_banner[snapshot_date])
+RETURN
+    CALCULATE(
+        SUM(basket_banner[complete_stores]),
+        basket_banner[snapshot_date] = Fecha
+    )
+
+Completitud canasta =
+VAR Fecha = MAXX(ALL(basket_banner), basket_banner[snapshot_date])
+VAR Completas =
+    CALCULATE(
+        SUM(basket_banner[complete_stores]),
+        basket_banner[snapshot_date] = Fecha
+    )
+VAR Activas =
+    CALCULATE(
+        SUM(basket_banner[active_stores]),
+        basket_banner[snapshot_date] = Fecha
+    )
+RETURN
+    DIVIDE(Completas, Activas)
+
+Ahorro canasta =
+VAR Fecha = MAXX(ALL(basket_savings), basket_savings[snapshot_date])
+RETURN
+    CALCULATE(
+        MAX(basket_savings[potential_saving_amount]),
+        basket_savings[snapshot_date] = Fecha,
+        basket_savings[comparison_level] = "BANNER"
+    )
+
+Ahorro canasta porcentaje =
+VAR Fecha = MAXX(ALL(basket_savings), basket_savings[snapshot_date])
+RETURN
+    DIVIDE(
+        CALCULATE(
+            MAX(basket_savings[potential_saving_pct]),
+            basket_savings[snapshot_date] = Fecha,
+            basket_savings[comparison_level] = "BANNER"
+        ),
+        100
+    )
+
+Salud cadena-dia =
+VAR Fecha = MAXX(ALL(banner_health), banner_health[snapshot_date])
+VAR Saludables =
+    CALCULATE(
+        COUNTROWS(FILTER(banner_health, banner_health[source_healthy] = TRUE())),
+        banner_health[snapshot_date] = Fecha
+    )
+VAR Total =
+    CALCULATE(
+        COUNTROWS(banner_health),
+        banner_health[snapshot_date] = Fecha
+    )
+RETURN
+    DIVIDE(Saludables, Total)
+
+Cobertura tiendas =
+MEDIAN(source_health[store_coverage_ratio])
+
+Precios invalidos =
+VAR Fecha = MAXX(ALL(source_health), source_health[snapshot_date])
+RETURN
+    CALCULATE(
+        SUM(source_health[invalid_list_price_rows]),
+        source_health[snapshot_date] = Fecha
+    )
+
+Dispersion limpia =
+VAR EsCadena = ISINSCOPE(dispersion_entity[banner_label])
+VAR Fecha =
+    IF(
+        EsCadena,
+        MAXX(
+            FILTER(
+                ALL(dispersion_entity),
+                dispersion_entity[coverage_status] = "PUBLISHABLE"
+                    && dispersion_entity[dispersion_level] = "BANNER"
+            ),
+            dispersion_entity[snapshot_date]
+        ),
+        MAXX(
+            FILTER(
+                ALL(dispersion_entity),
+                dispersion_entity[coverage_status] = "PUBLISHABLE"
+            ),
+            dispersion_entity[snapshot_date]
+        )
+    )
+RETURN
+    IF(
+        EsCadena,
+        CALCULATE(
+            MEDIAN(dispersion_entity[median_dispersion_clean]),
+            dispersion_entity[snapshot_date] = Fecha,
+            dispersion_entity[coverage_status] = "PUBLISHABLE",
+            dispersion_entity[dispersion_level] = "BANNER"
+        ),
+        CALCULATE(
+            MEDIAN(dispersion_entity[median_dispersion_clean]),
+            dispersion_entity[snapshot_date] = Fecha,
+            dispersion_entity[coverage_status] = "PUBLISHABLE"
+        )
+    )
+
+Productos dispersion publicables =
+VAR Fecha =
+    MAXX(
+        FILTER(
+            ALL(dispersion_entity),
+            dispersion_entity[coverage_status] = "PUBLISHABLE"
+        ),
+        dispersion_entity[snapshot_date]
+    )
+RETURN
+    CALCULATE(
+        SUM(dispersion_entity[publishable_products]),
+        dispersion_entity[snapshot_date] = Fecha,
+        dispersion_entity[coverage_status] = "PUBLISHABLE"
+    )
+
+Fallas altas =
+CALCULATE(
+    SUM(quality_checks[failed_rows]),
+    quality_checks[severity] = "high"
+)
+
+Contribucion driver top 3 =
+VAR Fecha = MAXX(ALL(index_drivers), index_drivers[snapshot_date])
+RETURN
+    CALCULATE(
+        SUM(index_drivers[contribution_log_points]),
+        index_drivers[snapshot_date] = Fecha,
+        KEEPFILTERS(index_drivers[driver_rank] <= 3)
+    )

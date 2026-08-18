@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using this metadata."
+title: "Pricing y canasta de supermercado"
+type: software
+authors:
+  - family-names: "Huth"
+    given-names: "Alexander"
+version: 2.0.0
+license: MIT
+repository-code: "https://github.com/alexanderhuth98/pricing-canasta-supermercado"
+url: "https://alexanderhuth98.github.io/pricing-canasta-supermercado/"
+abstract: >-
+  Pipeline reproducible para validar snapshots de Precios Claros - Base SEPA y
+  analizar nivel relativo de precios, dispersión y una canasta fija de productos.
+keywords:
+  - precios
+  - supermercados
+  - Argentina
+  - data analytics
+  - DuckDB
+  - SEPA

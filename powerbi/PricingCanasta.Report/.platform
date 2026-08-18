@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "PricingCanasta"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "9e2052a5-6592-47bd-b2c2-a7dac9b6356a"
+  }
+}

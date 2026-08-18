@@ -1,0 +1,1469 @@
+{
+  "name": "Pricing Canasta",
+  "id": "PricingCanasta",
+  "compatibilityLevel": 1606,
+  "model": {
+    "name": "Pricing Canasta",
+    "culture": "es-AR",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "tables": [
+      {
+        "name": "index_daily",
+        "description": "Importado desde portfolio_data/index_daily.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "scope_version",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "scope_version",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "snapshot_date",
+            "dataType": "dateTime",
+            "sourceColumn": "snapshot_date",
+            "formatString": "dd MMM yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_comercio",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_comercio",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_bandera",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_bandera",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "price_index",
+            "dataType": "double",
+            "sourceColumn": "price_index",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "common_gtins",
+            "dataType": "int64",
+            "sourceColumn": "common_gtins",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "catalog_gtins",
+            "dataType": "int64",
+            "sourceColumn": "catalog_gtins",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "shared_catalog_pct",
+            "dataType": "double",
+            "sourceColumn": "shared_catalog_pct",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "publishable",
+            "dataType": "boolean",
+            "sourceColumn": "publishable",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "banner_label",
+            "dataType": "string",
+            "sourceColumn": "banner_label",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "index_daily",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"index_daily.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"scope_version\", type text},\n        {\"snapshot_date\", type date},\n        {\"id_comercio\", type text},\n        {\"id_bandera\", type text},\n        {\"price_index\", type number},\n        {\"common_gtins\", Int64.Type},\n        {\"catalog_gtins\", Int64.Type},\n        {\"shared_catalog_pct\", type number},\n        {\"publishable\", type logical},\n        {\"banner_label\", type text}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "index_7d",
+        "description": "Importado desde portfolio_data/index_7d.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "scope_version",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "scope_version",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_comercio",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_comercio",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_bandera",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_bandera",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "observed_days",
+            "dataType": "int64",
+            "sourceColumn": "observed_days",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "geometric_mean_index",
+            "dataType": "double",
+            "sourceColumn": "geometric_mean_index",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "minimum_index",
+            "dataType": "double",
+            "sourceColumn": "minimum_index",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "maximum_index",
+            "dataType": "double",
+            "sourceColumn": "maximum_index",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "index_stddev",
+            "dataType": "double",
+            "sourceColumn": "index_stddev",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "minimum_common_gtins",
+            "dataType": "int64",
+            "sourceColumn": "minimum_common_gtins",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "publishable_all_observed_days",
+            "dataType": "boolean",
+            "sourceColumn": "publishable_all_observed_days",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "banner_label",
+            "dataType": "string",
+            "sourceColumn": "banner_label",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "index_7d",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"index_7d.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"scope_version\", type text},\n        {\"id_comercio\", type text},\n        {\"id_bandera\", type text},\n        {\"observed_days\", Int64.Type},\n        {\"geometric_mean_index\", type number},\n        {\"minimum_index\", type number},\n        {\"maximum_index\", type number},\n        {\"index_stddev\", type number},\n        {\"minimum_common_gtins\", Int64.Type},\n        {\"publishable_all_observed_days\", type logical},\n        {\"banner_label\", type text}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "index_sensitivity",
+        "description": "Importado desde portfolio_data/index_sensitivity.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "scope_version",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "scope_version",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "snapshot_date",
+            "dataType": "dateTime",
+            "sourceColumn": "snapshot_date",
+            "formatString": "dd MMM yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_comercio",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_comercio",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_bandera",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_bandera",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "common_gtins",
+            "dataType": "int64",
+            "sourceColumn": "common_gtins",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "raw_index",
+            "dataType": "double",
+            "sourceColumn": "raw_index",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "exclude_critical_index",
+            "dataType": "double",
+            "sourceColumn": "exclude_critical_index",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "winsorized_index",
+            "dataType": "double",
+            "sourceColumn": "winsorized_index",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "excluded_products",
+            "dataType": "int64",
+            "sourceColumn": "excluded_products",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "banner_label",
+            "dataType": "string",
+            "sourceColumn": "banner_label",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "sensitivity_delta",
+            "dataType": "double",
+            "sourceColumn": "sensitivity_delta",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "index_sensitivity",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"index_sensitivity.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"scope_version\", type text},\n        {\"snapshot_date\", type date},\n        {\"id_comercio\", type text},\n        {\"id_bandera\", type text},\n        {\"common_gtins\", Int64.Type},\n        {\"raw_index\", type number},\n        {\"exclude_critical_index\", type number},\n        {\"winsorized_index\", type number},\n        {\"excluded_products\", Int64.Type},\n        {\"banner_label\", type text},\n        {\"sensitivity_delta\", type number}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "index_drivers",
+        "description": "Importado desde portfolio_data/index_drivers.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "scope_version",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "scope_version",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "snapshot_date",
+            "dataType": "dateTime",
+            "sourceColumn": "snapshot_date",
+            "formatString": "dd MMM yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_comercio",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_comercio",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_bandera",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_bandera",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "gtin14",
+            "dataType": "string",
+            "sourceColumn": "gtin14",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "banner_price",
+            "dataType": "double",
+            "sourceColumn": "banner_price",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "benchmark_price",
+            "dataType": "double",
+            "sourceColumn": "benchmark_price",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "price_relative",
+            "dataType": "double",
+            "sourceColumn": "price_relative",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "contribution_log_points",
+            "dataType": "double",
+            "sourceColumn": "contribution_log_points",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "product_relative_pct",
+            "dataType": "double",
+            "sourceColumn": "product_relative_pct",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "driver_rank",
+            "dataType": "int64",
+            "sourceColumn": "driver_rank",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "banner_label",
+            "dataType": "string",
+            "sourceColumn": "banner_label",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "producto_descripcion",
+            "dataType": "string",
+            "sourceColumn": "producto_descripcion",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "marca",
+            "dataType": "string",
+            "sourceColumn": "marca",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "index_drivers",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"index_drivers.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"scope_version\", type text},\n        {\"snapshot_date\", type date},\n        {\"id_comercio\", type text},\n        {\"id_bandera\", type text},\n        {\"gtin14\", type text},\n        {\"banner_price\", type number},\n        {\"benchmark_price\", type number},\n        {\"price_relative\", type number},\n        {\"contribution_log_points\", type number},\n        {\"product_relative_pct\", type number},\n        {\"driver_rank\", Int64.Type},\n        {\"banner_label\", type text},\n        {\"producto_descripcion\", type text},\n        {\"marca\", type text}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "basket_banner",
+        "description": "Importado desde portfolio_data/basket_banner.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "basket_version",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "basket_version",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "snapshot_date",
+            "dataType": "dateTime",
+            "sourceColumn": "snapshot_date",
+            "formatString": "dd MMM yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_comercio",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_comercio",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_bandera",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_bandera",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "active_stores",
+            "dataType": "int64",
+            "sourceColumn": "active_stores",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "complete_stores",
+            "dataType": "int64",
+            "sourceColumn": "complete_stores",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "completion_rate",
+            "dataType": "double",
+            "sourceColumn": "completion_rate",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "branch_mean_cost",
+            "dataType": "double",
+            "sourceColumn": "branch_mean_cost",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "branch_median_cost",
+            "dataType": "double",
+            "sourceColumn": "branch_median_cost",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cost_p10",
+            "dataType": "double",
+            "sourceColumn": "cost_p10",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cost_p90",
+            "dataType": "double",
+            "sourceColumn": "cost_p90",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "coverage_status",
+            "dataType": "string",
+            "sourceColumn": "coverage_status",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "banner_label",
+            "dataType": "string",
+            "sourceColumn": "banner_label",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "basket_banner",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"basket_banner.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"basket_version\", type text},\n        {\"snapshot_date\", type date},\n        {\"id_comercio\", type text},\n        {\"id_bandera\", type text},\n        {\"active_stores\", Int64.Type},\n        {\"complete_stores\", Int64.Type},\n        {\"completion_rate\", type number},\n        {\"branch_mean_cost\", type number},\n        {\"branch_median_cost\", type number},\n        {\"cost_p10\", type number},\n        {\"cost_p90\", type number},\n        {\"coverage_status\", type text},\n        {\"banner_label\", type text}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "basket_province",
+        "description": "Importado desde portfolio_data/basket_province.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "basket_version",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "basket_version",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "snapshot_date",
+            "dataType": "dateTime",
+            "sourceColumn": "snapshot_date",
+            "formatString": "dd MMM yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "provincia_codigo",
+            "dataType": "string",
+            "sourceColumn": "provincia_codigo",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "active_stores",
+            "dataType": "int64",
+            "sourceColumn": "active_stores",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "complete_stores",
+            "dataType": "int64",
+            "sourceColumn": "complete_stores",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "complete_banners",
+            "dataType": "int64",
+            "sourceColumn": "complete_banners",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "completion_rate",
+            "dataType": "double",
+            "sourceColumn": "completion_rate",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "branch_mean_cost",
+            "dataType": "double",
+            "sourceColumn": "branch_mean_cost",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "branch_median_cost",
+            "dataType": "double",
+            "sourceColumn": "branch_median_cost",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cost_p10",
+            "dataType": "double",
+            "sourceColumn": "cost_p10",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cost_p90",
+            "dataType": "double",
+            "sourceColumn": "cost_p90",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "coverage_status",
+            "dataType": "string",
+            "sourceColumn": "coverage_status",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "basket_province",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"basket_province.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"basket_version\", type text},\n        {\"snapshot_date\", type date},\n        {\"provincia_codigo\", type text},\n        {\"active_stores\", Int64.Type},\n        {\"complete_stores\", Int64.Type},\n        {\"complete_banners\", Int64.Type},\n        {\"completion_rate\", type number},\n        {\"branch_mean_cost\", type number},\n        {\"branch_median_cost\", type number},\n        {\"cost_p10\", type number},\n        {\"cost_p90\", type number},\n        {\"coverage_status\", type text}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "basket_definition",
+        "description": "Importado desde portfolio_data/basket_definition.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "basket_version",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "basket_version",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "component_order",
+            "dataType": "int64",
+            "sourceColumn": "component_order",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "category_id",
+            "dataType": "string",
+            "sourceColumn": "category_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "category_name",
+            "dataType": "string",
+            "sourceColumn": "category_name",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "gtin14",
+            "dataType": "string",
+            "sourceColumn": "gtin14",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "canonical_product_name",
+            "dataType": "string",
+            "sourceColumn": "canonical_product_name",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "target_quantity_base",
+            "dataType": "double",
+            "sourceColumn": "target_quantity_base",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "target_base_unit",
+            "dataType": "string",
+            "sourceColumn": "target_base_unit",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "include_regex",
+            "dataType": "string",
+            "sourceColumn": "include_regex",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "exclude_regex",
+            "dataType": "string",
+            "sourceColumn": "exclude_regex",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "selection_rationale",
+            "dataType": "string",
+            "sourceColumn": "selection_rationale",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "producto_descripcion",
+            "dataType": "string",
+            "sourceColumn": "producto_descripcion",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "marca",
+            "dataType": "string",
+            "sourceColumn": "marca",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cantidad_base",
+            "dataType": "double",
+            "sourceColumn": "cantidad_base",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "unidad_base",
+            "dataType": "string",
+            "sourceColumn": "unidad_base",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "basket_definition",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"basket_definition.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"basket_version\", type text},\n        {\"component_order\", Int64.Type},\n        {\"category_id\", type text},\n        {\"category_name\", type text},\n        {\"gtin14\", type text},\n        {\"canonical_product_name\", type text},\n        {\"target_quantity_base\", type number},\n        {\"target_base_unit\", type text},\n        {\"include_regex\", type text},\n        {\"exclude_regex\", type text},\n        {\"selection_rationale\", type text},\n        {\"producto_descripcion\", type text},\n        {\"marca\", type text},\n        {\"cantidad_base\", type number},\n        {\"unidad_base\", type text}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "basket_savings",
+        "description": "Importado desde portfolio_data/basket_savings.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "basket_version",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "basket_version",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "snapshot_date",
+            "dataType": "dateTime",
+            "sourceColumn": "snapshot_date",
+            "formatString": "dd MMM yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "comparison_level",
+            "dataType": "string",
+            "sourceColumn": "comparison_level",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "highest_cost",
+            "dataType": "double",
+            "sourceColumn": "highest_cost",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "lowest_cost",
+            "dataType": "double",
+            "sourceColumn": "lowest_cost",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "potential_saving_amount",
+            "dataType": "double",
+            "sourceColumn": "potential_saving_amount",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "potential_saving_pct",
+            "dataType": "double",
+            "sourceColumn": "potential_saving_pct",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "basket_savings",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"basket_savings.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"basket_version\", type text},\n        {\"snapshot_date\", type date},\n        {\"comparison_level\", type text},\n        {\"highest_cost\", type number},\n        {\"lowest_cost\", type number},\n        {\"potential_saving_amount\", type number},\n        {\"potential_saving_pct\", type number}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "dispersion_entity",
+        "description": "Importado desde portfolio_data/dispersion_entity.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "snapshot_date",
+            "dataType": "dateTime",
+            "sourceColumn": "snapshot_date",
+            "formatString": "dd MMM yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "dispersion_level",
+            "dataType": "string",
+            "sourceColumn": "dispersion_level",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_comercio",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_comercio",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_bandera",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_bandera",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "provincia_codigo",
+            "dataType": "string",
+            "sourceColumn": "provincia_codigo",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "publishable_products",
+            "dataType": "int64",
+            "sourceColumn": "publishable_products",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "median_dispersion_raw",
+            "dataType": "double",
+            "sourceColumn": "median_dispersion_raw",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "median_dispersion_clean",
+            "dataType": "double",
+            "sourceColumn": "median_dispersion_clean",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "excluded_critical_prices",
+            "dataType": "double",
+            "sourceColumn": "excluded_critical_prices",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "coverage_status",
+            "dataType": "string",
+            "sourceColumn": "coverage_status",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "banner_label",
+            "dataType": "string",
+            "sourceColumn": "banner_label",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dispersion_entity",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"dispersion_entity.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"snapshot_date\", type date},\n        {\"dispersion_level\", type text},\n        {\"id_comercio\", type text},\n        {\"id_bandera\", type text},\n        {\"provincia_codigo\", type text},\n        {\"publishable_products\", Int64.Type},\n        {\"median_dispersion_raw\", type number},\n        {\"median_dispersion_clean\", type number},\n        {\"excluded_critical_prices\", type number},\n        {\"coverage_status\", type text},\n        {\"banner_label\", type text}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "source_health",
+        "description": "Importado desde portfolio_data/source_health.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "snapshot_date",
+            "dataType": "dateTime",
+            "sourceColumn": "snapshot_date",
+            "formatString": "dd MMM yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "source_rows",
+            "dataType": "int64",
+            "sourceColumn": "source_rows",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "reporting_stores",
+            "dataType": "int64",
+            "sourceColumn": "reporting_stores",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "global_gtins",
+            "dataType": "int64",
+            "sourceColumn": "global_gtins",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "global_gtin_rows",
+            "dataType": "int64",
+            "sourceColumn": "global_gtin_rows",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "restricted_local_rows",
+            "dataType": "int64",
+            "sourceColumn": "restricted_local_rows",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "internal_local_rows",
+            "dataType": "int64",
+            "sourceColumn": "internal_local_rows",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "invalid_code_rows",
+            "dataType": "int64",
+            "sourceColumn": "invalid_code_rows",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "invalid_list_price_rows",
+            "dataType": "int64",
+            "sourceColumn": "invalid_list_price_rows",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "null_key_rows",
+            "dataType": "int64",
+            "sourceColumn": "null_key_rows",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "general_promotion_rows",
+            "dataType": "int64",
+            "sourceColumn": "general_promotion_rows",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "segmented_promotion_rows",
+            "dataType": "int64",
+            "sourceColumn": "segmented_promotion_rows",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "median_rows_7d",
+            "dataType": "double",
+            "sourceColumn": "median_rows_7d",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "median_stores_7d",
+            "dataType": "double",
+            "sourceColumn": "median_stores_7d",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "row_coverage_ratio",
+            "dataType": "double",
+            "sourceColumn": "row_coverage_ratio",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "store_coverage_ratio",
+            "dataType": "double",
+            "sourceColumn": "store_coverage_ratio",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "source_healthy",
+            "dataType": "boolean",
+            "sourceColumn": "source_healthy",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "source_health",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"source_health.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"snapshot_date\", type date},\n        {\"source_rows\", Int64.Type},\n        {\"reporting_stores\", Int64.Type},\n        {\"global_gtins\", Int64.Type},\n        {\"global_gtin_rows\", Int64.Type},\n        {\"restricted_local_rows\", Int64.Type},\n        {\"internal_local_rows\", Int64.Type},\n        {\"invalid_code_rows\", Int64.Type},\n        {\"invalid_list_price_rows\", Int64.Type},\n        {\"null_key_rows\", Int64.Type},\n        {\"general_promotion_rows\", Int64.Type},\n        {\"segmented_promotion_rows\", Int64.Type},\n        {\"median_rows_7d\", type number},\n        {\"median_stores_7d\", type number},\n        {\"row_coverage_ratio\", type number},\n        {\"store_coverage_ratio\", type number},\n        {\"source_healthy\", type logical}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "banner_health",
+        "description": "Importado desde portfolio_data/banner_health.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "scope_version",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "scope_version",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "snapshot_date",
+            "dataType": "dateTime",
+            "sourceColumn": "snapshot_date",
+            "formatString": "dd MMM yyyy",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_comercio",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_comercio",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "id_bandera",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "id_bandera",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "banner_label",
+            "dataType": "string",
+            "sourceColumn": "banner_label",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "source_rows",
+            "dataType": "int64",
+            "sourceColumn": "source_rows",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "reporting_stores",
+            "dataType": "int64",
+            "sourceColumn": "reporting_stores",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "reported_gtins",
+            "dataType": "int64",
+            "sourceColumn": "reported_gtins",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "median_rows_7d",
+            "dataType": "double",
+            "sourceColumn": "median_rows_7d",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "median_stores_7d",
+            "dataType": "double",
+            "sourceColumn": "median_stores_7d",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "row_coverage_ratio",
+            "dataType": "double",
+            "sourceColumn": "row_coverage_ratio",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "store_coverage_ratio",
+            "dataType": "double",
+            "sourceColumn": "store_coverage_ratio",
+            "formatString": "0.00",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "source_healthy",
+            "dataType": "boolean",
+            "sourceColumn": "source_healthy",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "banner_health",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"banner_health.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"scope_version\", type text},\n        {\"snapshot_date\", type date},\n        {\"id_comercio\", type text},\n        {\"id_bandera\", type text},\n        {\"banner_label\", type text},\n        {\"source_rows\", Int64.Type},\n        {\"reporting_stores\", Int64.Type},\n        {\"reported_gtins\", Int64.Type},\n        {\"median_rows_7d\", type number},\n        {\"median_stores_7d\", type number},\n        {\"row_coverage_ratio\", type number},\n        {\"store_coverage_ratio\", type number},\n        {\"source_healthy\", type logical}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "quality_checks",
+        "description": "Importado desde portfolio_data/quality_checks.csv.",
+        "columns": [
+          {
+            "name": "build_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "build_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "test_name",
+            "dataType": "string",
+            "sourceColumn": "test_name",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "failed_rows",
+            "dataType": "double",
+            "sourceColumn": "failed_rows",
+            "formatString": "#,0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "severity",
+            "dataType": "string",
+            "sourceColumn": "severity",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "details",
+            "dataType": "string",
+            "sourceColumn": "details",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "quality_checks",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(File.Contents(DataFolder & \"quality_checks.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),\n    TypedColumns = Table.TransformColumnTypes(\n        PromotedHeaders,\n        {\n        {\"build_id\", type text},\n        {\"test_name\", type text},\n        {\"failed_rows\", type number},\n        {\"severity\", type text},\n        {\"details\", type text}\n        },\n        \"en-US\"\n    )\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Calendario",
+        "description": "Dimension calendario compartida por todos los marts diarios.",
+        "dataCategory": "Time",
+        "columns": [
+          {
+            "name": "Fecha",
+            "dataType": "dateTime",
+            "sourceColumn": "Fecha",
+            "formatString": "yyyy-MM-dd",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Anio",
+            "dataType": "int64",
+            "sourceColumn": "Anio",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Mes numero",
+            "dataType": "int64",
+            "sourceColumn": "Mes numero",
+            "formatString": "0",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Mes",
+            "dataType": "string",
+            "sourceColumn": "Mes",
+            "sortByColumn": "Mes numero",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Dia",
+            "dataType": "string",
+            "sourceColumn": "Dia",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Calendario",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    StartDate = #date(2026, 7, 27),\n    EndDate = #date(2026, 8, 2),\n    Dates = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),\n    Source = Table.FromList(Dates, Splitter.SplitByNothing(), {\"Fecha\"}),\n    Typed = Table.TransformColumnTypes(Source, {{\"Fecha\", type date}}),\n    AddYear = Table.AddColumn(Typed, \"Anio\", each Date.Year([Fecha]), Int64.Type),\n    AddMonthNumber = Table.AddColumn(AddYear, \"Mes numero\", each Date.Month([Fecha]), Int64.Type),\n    AddMonth = Table.AddColumn(AddMonthNumber, \"Mes\", each Date.ToText([Fecha], \"MMM\", \"es-AR\"), type text),\n    AddDay = Table.AddColumn(AddMonth, \"Dia\", each Date.ToText([Fecha], \"ddd\", \"es-AR\"), type text)\nin\n    AddDay"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Medidas",
+        "description": "Medidas ejecutivas y de calidad del reporte.",
+        "columns": [
+          {
+            "name": "Valor",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "Valor"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Medidas",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "#table(type table [Valor = Int64.Type], {{1}})"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Indice precio",
+            "description": "Indice relativo sobre el benchmark geometrico del panel comun.",
+            "expression": "MEDIAN('index_daily'[price_index])",
+            "formatString": "0.00"
+          },
+          {
+            "name": "GTIN comunes ultimo dia",
+            "description": "Menor cantidad de GTIN comunes entre cadenas en el ultimo corte disponible.",
+            "expression": "VAR Fecha = MAXX(ALL('index_daily'), 'index_daily'[snapshot_date])\nRETURN\n    CALCULATE(MIN('index_daily'[common_gtins]), 'index_daily'[snapshot_date] = Fecha)",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Indice semanal",
+            "description": "Mediana entre los indices geometricos por cadena en la ventana observada.",
+            "expression": "MEDIAN('index_7d'[geometric_mean_index])",
+            "formatString": "0.00"
+          },
+          {
+            "name": "Sensibilidad maxima",
+            "description": "Mayor diferencia entre escenarios de sensibilidad.",
+            "expression": "MAX('index_sensitivity'[sensitivity_delta])",
+            "formatString": "0.00"
+          },
+          {
+            "name": "Costo canasta ultimo corte",
+            "description": "Mediana de los costos por cadena publicable en el ultimo corte.",
+            "expression": "VAR Fecha = MAXX(ALL('basket_banner'), 'basket_banner'[snapshot_date])\nRETURN\n    CALCULATE(\n        MEDIAN('basket_banner'[branch_median_cost]),\n        'basket_banner'[snapshot_date] = Fecha,\n        'basket_banner'[coverage_status] = \"PUBLISHABLE\"\n    )",
+            "formatString": "$ #,0"
+          },
+          {
+            "name": "Costo canasta provincia",
+            "description": "Costo mediano provincial publicable en el ultimo corte.",
+            "expression": "VAR Fecha = MAXX(ALL('basket_province'), 'basket_province'[snapshot_date])\nRETURN\n    CALCULATE(\n        MEDIAN('basket_province'[branch_median_cost]),\n        'basket_province'[snapshot_date] = Fecha,\n        'basket_province'[coverage_status] = \"PUBLISHABLE\"\n    )",
+            "formatString": "$ #,0"
+          },
+          {
+            "name": "Sucursales canasta completa",
+            "description": "Sucursales con los ocho componentes disponibles en el ultimo corte.",
+            "expression": "VAR Fecha = MAXX(ALL('basket_banner'), 'basket_banner'[snapshot_date])\nRETURN\n    CALCULATE(\n        SUM('basket_banner'[complete_stores]),\n        'basket_banner'[snapshot_date] = Fecha\n    )",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Completitud canasta",
+            "description": "Proporcion de sucursales activas con canasta completa en el ultimo corte.",
+            "expression": "VAR Fecha = MAXX(ALL('basket_banner'), 'basket_banner'[snapshot_date])\nVAR Completas = CALCULATE(SUM('basket_banner'[complete_stores]), 'basket_banner'[snapshot_date] = Fecha)\nVAR Activas = CALCULATE(SUM('basket_banner'[active_stores]), 'basket_banner'[snapshot_date] = Fecha)\nRETURN\n    DIVIDE(Completas, Activas)",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Ahorro canasta",
+            "description": "Diferencia entre la cadena mas cara y la mas barata en el ultimo corte.",
+            "expression": "VAR Fecha = MAXX(ALL('basket_savings'), 'basket_savings'[snapshot_date])\nRETURN\n    CALCULATE(\n        MAX('basket_savings'[potential_saving_amount]),\n        'basket_savings'[snapshot_date] = Fecha,\n        'basket_savings'[comparison_level] = \"BANNER\"\n    )",
+            "formatString": "$ #,0"
+          },
+          {
+            "name": "Ahorro canasta porcentaje",
+            "description": "Ahorro porcentual potencial entre cadenas en el ultimo corte.",
+            "expression": "VAR Fecha = MAXX(ALL('basket_savings'), 'basket_savings'[snapshot_date])\nRETURN\n    DIVIDE(\n        CALCULATE(\n            MAX('basket_savings'[potential_saving_pct]),\n            'basket_savings'[snapshot_date] = Fecha,\n            'basket_savings'[comparison_level] = \"BANNER\"\n        ),\n        100\n    )",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Salud cadena-dia",
+            "description": "Porcentaje de cadenas saludables en el ultimo corte.",
+            "expression": "VAR Fecha = MAXX(ALL('banner_health'), 'banner_health'[snapshot_date])\nVAR Saludables =\n    CALCULATE(\n        COUNTROWS(FILTER('banner_health', 'banner_health'[source_healthy] = TRUE())),\n        'banner_health'[snapshot_date] = Fecha\n    )\nVAR Total = CALCULATE(COUNTROWS('banner_health'), 'banner_health'[snapshot_date] = Fecha)\nRETURN\n    DIVIDE(Saludables, Total)",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Cobertura tiendas",
+            "description": "Cobertura mediana de tiendas reportantes.",
+            "expression": "MEDIAN('source_health'[store_coverage_ratio])",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Precios invalidos",
+            "description": "Filas con precio de lista invalido en el ultimo corte.",
+            "expression": "VAR Fecha = MAXX(ALL('source_health'), 'source_health'[snapshot_date])\nRETURN\n    CALCULATE(SUM('source_health'[invalid_list_price_rows]), 'source_health'[snapshot_date] = Fecha)",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Dispersion limpia",
+            "description": "Dispersion mediana del ultimo corte publicable luego de excluir precios criticos.",
+            "expression": "VAR EsCadena = ISINSCOPE('dispersion_entity'[banner_label])\nVAR Fecha =\n    IF(\n        EsCadena,\n        MAXX(\n            FILTER(\n                ALL('dispersion_entity'),\n                'dispersion_entity'[coverage_status] = \"PUBLISHABLE\"\n                    && 'dispersion_entity'[dispersion_level] = \"BANNER\"\n            ),\n            'dispersion_entity'[snapshot_date]\n        ),\n        MAXX(\n            FILTER(\n                ALL('dispersion_entity'),\n                'dispersion_entity'[coverage_status] = \"PUBLISHABLE\"\n            ),\n            'dispersion_entity'[snapshot_date]\n        )\n    )\nRETURN\n    IF(\n        EsCadena,\n        CALCULATE(\n            MEDIAN('dispersion_entity'[median_dispersion_clean]),\n            'dispersion_entity'[snapshot_date] = Fecha,\n            'dispersion_entity'[coverage_status] = \"PUBLISHABLE\",\n            'dispersion_entity'[dispersion_level] = \"BANNER\"\n        ),\n        CALCULATE(\n            MEDIAN('dispersion_entity'[median_dispersion_clean]),\n            'dispersion_entity'[snapshot_date] = Fecha,\n            'dispersion_entity'[coverage_status] = \"PUBLISHABLE\"\n        )\n    )",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Productos dispersion publicables",
+            "description": "Productos incluidos en entidades publicables del ultimo corte disponible.",
+            "expression": "VAR Fecha =\n    MAXX(\n        FILTER(\n            ALL('dispersion_entity'),\n            'dispersion_entity'[coverage_status] = \"PUBLISHABLE\"\n        ),\n        'dispersion_entity'[snapshot_date]\n    )\nRETURN\n    CALCULATE(\n        SUM('dispersion_entity'[publishable_products]),\n        'dispersion_entity'[snapshot_date] = Fecha,\n        'dispersion_entity'[coverage_status] = \"PUBLISHABLE\"\n    )",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Fallas altas",
+            "description": "Filas fallidas en controles de severidad alta.",
+            "expression": "CALCULATE(SUM('quality_checks'[failed_rows]), 'quality_checks'[severity] = \"high\")",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Contribucion driver top 3",
+            "description": "Contribucion logaritmica de los tres principales drivers del ultimo corte.",
+            "expression": "VAR Fecha = MAXX(ALL('index_drivers'), 'index_drivers'[snapshot_date])\nRETURN\n    CALCULATE(\n        SUM('index_drivers'[contribution_log_points]),\n        'index_drivers'[snapshot_date] = Fecha,\n        KEEPFILTERS('index_drivers'[driver_rank] <= 3)\n    )",
+            "formatString": "0.000"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "Calendario_index_daily",
+        "toTable": "Calendario",
+        "toColumn": "Fecha",
+        "fromTable": "index_daily",
+        "fromColumn": "snapshot_date"
+      },
+      {
+        "name": "Calendario_index_sensitivity",
+        "toTable": "Calendario",
+        "toColumn": "Fecha",
+        "fromTable": "index_sensitivity",
+        "fromColumn": "snapshot_date"
+      },
+      {
+        "name": "Calendario_index_drivers",
+        "toTable": "Calendario",
+        "toColumn": "Fecha",
+        "fromTable": "index_drivers",
+        "fromColumn": "snapshot_date"
+      },
+      {
+        "name": "Calendario_basket_banner",
+        "toTable": "Calendario",
+        "toColumn": "Fecha",
+        "fromTable": "basket_banner",
+        "fromColumn": "snapshot_date"
+      },
+      {
+        "name": "Calendario_basket_province",
+        "toTable": "Calendario",
+        "toColumn": "Fecha",
+        "fromTable": "basket_province",
+        "fromColumn": "snapshot_date"
+      },
+      {
+        "name": "Calendario_basket_savings",
+        "toTable": "Calendario",
+        "toColumn": "Fecha",
+        "fromTable": "basket_savings",
+        "fromColumn": "snapshot_date"
+      },
+      {
+        "name": "Calendario_dispersion_entity",
+        "toTable": "Calendario",
+        "toColumn": "Fecha",
+        "fromTable": "dispersion_entity",
+        "fromColumn": "snapshot_date"
+      },
+      {
+        "name": "Calendario_source_health",
+        "toTable": "Calendario",
+        "toColumn": "Fecha",
+        "fromTable": "source_health",
+        "fromColumn": "snapshot_date"
+      },
+      {
+        "name": "Calendario_banner_health",
+        "toTable": "Calendario",
+        "toColumn": "Fecha",
+        "fromTable": "banner_health",
+        "fromColumn": "snapshot_date"
+      }
+    ],
+    "expressions": [
+      {
+        "name": "DataFolder",
+        "description": "Carpeta que contiene los CSV agregados de portfolio_data.",
+        "kind": "m",
+        "expression": "\"<PORTFOLIO_DATA_PATH>\\\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"
+      }
+    ]
+  }
+}

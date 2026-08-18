@@ -1,0 +1,54 @@
+{
+    "$schema":  "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.0.0/schema.json",
+    "themeCollection":  {
+                            "baseTheme":  {
+                                              "name":  "CY20SU09",
+                                              "type":  "SharedResources",
+                                              "reportVersionAtImport":  {
+                                                                            "page":  "1.3.53",
+                                                                            "visual":  "1.8.53",
+                                                                            "report":  "2.0.53"
+                                                                        }
+                                          },
+                            "customTheme":  {
+                                                "name":  "PricingEditorial",
+                                                "type":  "RegisteredResources",
+                                                "reportVersionAtImport":  {
+                                                                              "page":  "1.3.53",
+                                                                              "visual":  "1.8.53",
+                                                                              "report":  "2.0.53"
+                                                                          }
+                                            }
+                        },
+    "resourcePackages":  [
+                             {
+                                 "name":  "SharedResources",
+                                 "items":  [
+                                               {
+                                                   "path":  "BaseThemes/CY20SU09.json",
+                                                   "name":  "CY20SU09",
+                                                   "type":  "BaseTheme"
+                                               }
+                                           ],
+                                 "type":  "SharedResources"
+                             },
+                             {
+                                 "name":  "RegisteredResources",
+                                 "items":  [
+                                               {
+                                                   "path":  "PricingEditorial.json",
+                                                   "name":  "PricingEditorial",
+                                                   "type":  "CustomTheme"
+                                               }
+                                           ],
+                                 "type":  "RegisteredResources"
+                             }
+                         ],
+    "settings":  {
+                     "useEnhancedTooltips":  true,
+                     "defaultDrillFilterOtherVisuals":  true,
+                     "exportDataMode":  "AllowSummarized",
+                     "allowChangeFilterTypes":  true,
+                     "useStylableVisualContainerHeader":  true
+                 }
+}

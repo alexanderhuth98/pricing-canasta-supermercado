@@ -1,0 +1,26 @@
+﻿build_id,test_name,failed_rows,severity,details
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,basket_component_count,0.0,high,La version publicada contiene ocho componentes fijos.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,basket_component_uniqueness,0.0,high,Categorias y GTIN deben ser unicos dentro de la canasta.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,basket_selected_semantic_or_presentation_mismatch,0.0,high,Cada componente fijo debe respetar semantica y presentacion objetivo.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,build_input_boundaries,0.0,high,Los limites deben coincidir con window_start y as_of.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,build_input_count,0.0,high,El build exige siete snapshots consecutivos.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,comparable_key_null,0.0,high,El hecho global comparable requiere claves completas.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,daily_mart_date_count,0.0,high,mart_price_product_daily debe conservar las siete fechas.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,hileret_light_selected,0.0,high,Hileret Light no representa azucar blanca comun.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,index_common_panel_consistency,0.0,high,Todas las cadenas deben usar el mismo numero de GTIN por dia.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,index_geometric_center,0.0,high,La media geometrica de indices por dia debe ser 100.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,index_output_nonempty,0.0,high,El build debe producir filas del indice comun.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,ingestion_structural_status,0.0,high,"No se permiten archivos faltantes, malformados o con parsing parcial."
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,published_invalid_geography,0.0,high,La geografia invalida no puede publicarse ni entrar a rankings.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,restricted_code_in_global_fact,0.0,high,Los codigos restringidos 20-29 no pueden entrar al hecho global.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,source_loaded_row_difference,0.0,high,Toda fila estructuralmente valida debe cargarse.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,critical_price_anomalies,2336.0,medium,Saltos de escala o precios fuera de un factor 0.5-2.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,invalid_list_prices,392.0,medium,"Precios nulos, no numericos, cero o negativos."
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,invalid_or_missing_geography,258.0,medium,Sucursales sin codigo provincial AR-* normalizado.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,invalid_source_product_codes,5596.0,medium,EAN declarados que no superan formato o digito verificador.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,known_empty_source_packages,7.0,medium,Paquetes vacios conocidos reducen cobertura aunque no rompen parsing.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,reconstructed_source_lines,560.0,medium,Continuaciones fisicas se unieron y luego validaron contra el esquema.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,source_null_keys,0.0,medium,Filas fuente sin alguna clave obligatoria; quedan fuera de comparables.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,stale_as_of_date,0.0,medium,El corte publicado tiene mas de 14 dias de antiguedad.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,unhealthy_scope_banner_days,2.0,medium,Cadena-dia debajo de 80% de su cobertura semanal.
+941da9b2-93b6-40b8-8de8-c9e27ad03e10,unhealthy_snapshot_days,1.0,medium,Dias debajo de 80% de filas o sucursales de la mediana semanal.

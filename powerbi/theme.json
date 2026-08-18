@@ -1,0 +1,16 @@
+{
+  "name": "PricingEditorial",
+  "dataColors": ["#167D8D", "#D97941", "#17324D", "#78A083", "#C3A35B", "#6D7C86"],
+  "background": "#F6F2EA",
+  "foreground": "#17324D",
+  "tableAccent": "#167D8D",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "title": [{"fontFamily": "Segoe UI Semibold", "fontSize": 12, "color": {"solid": {"color": "#17324D"}}}],
+        "background": [{"color": {"solid": {"color": "#FFFFFF"}}, "transparency": 0}],
+        "border": [{"show": true, "color": {"solid": {"color": "#DDD7CD"}}, "radius": 4}]
+      }
+    }
+  }
+}
