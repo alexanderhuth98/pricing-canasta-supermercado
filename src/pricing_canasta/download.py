@@ -73,11 +73,9 @@ def _parsed_official_url(url: str, expected_host: str):
 
 def _validate_catalog_url(url: str) -> None:
     parsed = _parsed_official_url(url, OFFICIAL_CATALOG_HOST)
-    if (
-        parsed.path != "/api/3/action/package_show"
-        or parse_qs(parsed.query, strict_parsing=True)
-        != {"id": ["precios-claros-base-sepa"]}
-    ):
+    if parsed.path != "/api/3/action/package_show" or parse_qs(
+        parsed.query, strict_parsing=True
+    ) != {"id": ["precios-claros-base-sepa"]}:
         raise ValueError(f"Recurso de catalogo no permitido: {url}")
 
 
@@ -131,7 +129,9 @@ def _write_manifest_atomic(path: Path, entries: list[dict]) -> None:
 def _validate_zip(path: Path) -> str:
     with zipfile.ZipFile(path) as archive:
         validate_zip_safety(archive, path.name)
-        members = [member for member in archive.infolist() if member.filename.lower().endswith(".zip")]
+        members = [
+            member for member in archive.infolist() if member.filename.lower().endswith(".zip")
+        ]
         if not members:
             raise ValueError(f"{path.name} no contiene paquetes interiores.")
         roots = {Path(member.filename).parts[0] for member in members}
@@ -178,18 +178,13 @@ def _download_resource(resource: dict, known: list[dict]) -> dict:
             _reject_redirect(head)
             head.raise_for_status()
             _content_length(head.headers)
-            existing = next(
-                (entry for entry in reversed(known) if entry.get("url") == url), None
-            )
+            existing = next((entry for entry in reversed(known) if entry.get("url") == url), None)
             if (
                 existing
                 and _remote_unchanged(existing, head.headers)
                 and _verified_local_entry(existing)
             ):
-                print(
-                    f"[download] Sin cambios y hash verificado: "
-                    f"{Path(existing['path']).name}"
-                )
+                print(f"[download] Sin cambios y hash verificado: {Path(existing['path']).name}")
                 return {
                     **existing,
                     "last_checked_at_utc": datetime.now(UTC).isoformat(),
@@ -210,17 +205,14 @@ def _download_resource(resource: dict, known: list[dict]) -> dict:
                             continue
                         if downloaded + len(chunk) > MAX_HTTP_DOWNLOAD_BYTES:
                             raise ValueError(
-                                "Descarga excede "
-                                f"MAX_HTTP_DOWNLOAD_BYTES={MAX_HTTP_DOWNLOAD_BYTES}"
+                                f"Descarga excede MAX_HTTP_DOWNLOAD_BYTES={MAX_HTTP_DOWNLOAD_BYTES}"
                             )
                         output.write(chunk)
                         downloaded += len(chunk)
-                        if downloaded // (128 * 1024 * 1024) != (
-                            downloaded - len(chunk)
-                        ) // (128 * 1024 * 1024):
-                            print(
-                                f"[download] {weekday}: {downloaded / 1024**2:,.0f} MiB"
-                            )
+                        if downloaded // (128 * 1024 * 1024) != (downloaded - len(chunk)) // (
+                            128 * 1024 * 1024
+                        ):
+                            print(f"[download] {weekday}: {downloaded / 1024**2:,.0f} MiB")
                     output.flush()
                     os.fsync(output.fileno())
 
@@ -278,8 +270,7 @@ def download_all() -> list[dict]:
     if not catalog.get("success"):
         raise RuntimeError("El catalogo oficial respondio success=false")
     resources = [
-        item for item in catalog["result"]["resources"]
-        if item.get("format", "").upper() == "ZIP"
+        item for item in catalog["result"]["resources"] if item.get("format", "").upper() == "ZIP"
     ]
     if len(resources) != 7:
         raise ValueError(f"Se esperaban 7 snapshots ZIP y se encontraron {len(resources)}")

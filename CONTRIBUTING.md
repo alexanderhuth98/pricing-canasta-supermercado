@@ -19,8 +19,10 @@ Se requiere Python 3.11.
 
 ```powershell
 uv sync --extra dev --locked
-uv run ruff check src tests
+uv run ruff check .
+uv run ruff format --check .
 uv run pytest --cov=pricing_canasta --cov-report=term-missing --cov-fail-under=80
+powershell.exe -NoProfile -File .\powerbi\validate_pbip.ps1 -SkipTom
 ```
 
 Las pruebas unitarias no requieren descargar los snapshots históricos. Para datos,

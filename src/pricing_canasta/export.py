@@ -226,11 +226,22 @@ def _write_excel(frames: dict[str, pd.DataFrame], validation: ValidationResult) 
     _style_sheet(readme)
 
     sheet_order = [
-        "quality_daily", "quality_checks", "source_health", "basket_definition",
-        "index_daily", "index_7d", "index_sensitivity", "index_drivers",
-        "dispersion_entity", "dispersion_product_sample", "basket_banner",
-        "basket_province", "basket_banner_province", "basket_national",
-        "basket_savings", "price_anomalies_sample",
+        "quality_daily",
+        "quality_checks",
+        "source_health",
+        "basket_definition",
+        "index_daily",
+        "index_7d",
+        "index_sensitivity",
+        "index_drivers",
+        "dispersion_entity",
+        "dispersion_product_sample",
+        "basket_banner",
+        "basket_province",
+        "basket_banner_province",
+        "basket_national",
+        "basket_savings",
+        "price_anomalies_sample",
     ]
     for name in sheet_order:
         frame = frames[name]
@@ -269,8 +280,8 @@ def _enhance_dashboard_html(path: Path) -> None:
     html = html.replace(
         "<head>",
         (
-            "<head><meta name=\"viewport\" "
-            "content=\"width=device-width, initial-scale=1\">"
+            '<head><meta name="viewport" '
+            'content="width=device-width, initial-scale=1">'
             "<title>Pricing y canasta de supermercado</title>"
             "<style>body{margin:0;background:#F6F2EA;}"
             ".plotly-graph-div{width:100%!important;max-width:100%;}"
@@ -282,7 +293,7 @@ def _enhance_dashboard_html(path: Path) -> None:
     html = html.replace(
         "<body>",
         (
-            "<body><p class=\"sr-only\">Dashboard de nivel de precios, canasta, "
+            '<body><p class="sr-only">Dashboard de nivel de precios, canasta, '
             "dispersion, sensibilidad y cobertura. El indice identifica el ultimo dia "
             "comparable. Cada panel informa su fecha efectiva; "
             "los datos suprimidos no se incluyen en rankings.</p>"
@@ -303,9 +314,7 @@ def _write_dashboard(
     index = frames["index_daily"]
     index = index[index["publishable"]]
     index_latest = (
-        index[index["snapshot_date"] == index["snapshot_date"].max()]
-        if not index.empty
-        else index
+        index[index["snapshot_date"] == index["snapshot_date"].max()] if not index.empty else index
     )
     basket_banner = _latest_publishable(frames["basket_banner"])
     dispersion = frames["dispersion_entity"]
@@ -352,15 +361,13 @@ def _write_dashboard(
         figure = make_subplots(
             rows=8,
             cols=1,
-            specs=[[{"type": "indicator"}], [{"type": "indicator"}]]
-            + [[{"type": "xy"}]] * 6,
+            specs=[[{"type": "indicator"}], [{"type": "indicator"}]] + [[{"type": "xy"}]] * 6,
             subplot_titles=subplot_titles,
             vertical_spacing=0.055,
         )
         height = 2500
     else:
-        positions = [(1, 1), (1, 2), (2, 1), (2, 2),
-                     (3, 1), (3, 2), (4, 1), (4, 2)]
+        positions = [(1, 1), (1, 2), (2, 1), (2, 2), (3, 1), (3, 2), (4, 1), (4, 2)]
         figure = make_subplots(
             rows=4,
             cols=2,
@@ -383,7 +390,8 @@ def _write_dashboard(
             value=float(common_gtins),
             number={"font": {"size": 54}} if mobile else {},
         ),
-        row=positions[0][0], col=positions[0][1],
+        row=positions[0][0],
+        col=positions[0][1],
     )
     figure.add_trace(
         go.Indicator(
@@ -395,14 +403,17 @@ def _write_dashboard(
                 **({"font": {"size": 54}} if mobile else {}),
             },
         ),
-        row=positions[1][0], col=positions[1][1],
+        row=positions[1][0],
+        col=positions[1][1],
     )
 
     for banner, group in index.groupby("banner_label", sort=True):
         figure.add_trace(
             go.Scatter(
-                x=group["snapshot_date"], y=group["price_index"],
-                mode="lines+markers", name=banner,
+                x=group["snapshot_date"],
+                y=group["price_index"],
+                mode="lines+markers",
+                name=banner,
                 customdata=group[["common_gtins"]],
                 hovertemplate=(
                     "%{fullData.name}<br>Fecha: %{x|%d/%m/%Y}"
@@ -410,43 +421,61 @@ def _write_dashboard(
                     "<extra></extra>"
                 ),
             ),
-            row=positions[2][0], col=positions[2][1],
+            row=positions[2][0],
+            col=positions[2][1],
         )
     figure.add_shape(
-        type="line", x0=0, x1=1, y0=100, y1=100,
-        xref="x domain", yref="y",
+        type="line",
+        x0=0,
+        x1=1,
+        y0=100,
+        y1=100,
+        xref="x domain",
+        yref="y",
         line={"dash": "dash", "color": "#526A7A"},
     )
 
     figure.add_trace(
         go.Bar(
-            x=basket_banner["branch_median_cost"], y=basket_banner["banner_label"],
-            orientation="h", marker_color="#D97941", name="Canasta",
+            x=basket_banner["branch_median_cost"],
+            y=basket_banner["banner_label"],
+            orientation="h",
+            marker_color="#D97941",
+            name="Canasta",
             customdata=basket_banner[["complete_stores", "completion_rate"]],
             hovertemplate="%{y}<br>$%{x:,.0f}<br>Sucursales: %{customdata[0]}<br>Cobertura: %{customdata[1]:.1%}<extra></extra>",
-        ), row=positions[3][0], col=positions[3][1],
+        ),
+        row=positions[3][0],
+        col=positions[3][1],
     )
 
     chain_disp = dispersion[dispersion["dispersion_level"] == "BANNER"].sort_values(
         "median_dispersion_clean"
     )
-    province_disp = dispersion[
-        dispersion["dispersion_level"] == "PROVINCE"
-    ].sort_values("median_dispersion_clean")
+    province_disp = dispersion[dispersion["dispersion_level"] == "PROVINCE"].sort_values(
+        "median_dispersion_clean"
+    )
     figure.add_trace(
         go.Bar(
-            x=chain_disp["median_dispersion_clean"], y=chain_disp["banner_label"],
-            orientation="h", name="Cadena", marker_color="#167D8D",
+            x=chain_disp["median_dispersion_clean"],
+            y=chain_disp["banner_label"],
+            orientation="h",
+            name="Cadena",
+            marker_color="#167D8D",
         ),
-        row=positions[4][0], col=positions[4][1],
+        row=positions[4][0],
+        col=positions[4][1],
     )
     figure.add_trace(
         go.Bar(
             x=province_disp["median_dispersion_clean"],
-            y=province_disp["provincia_codigo"], orientation="h",
-            name="Provincia", marker_color="#78A083",
+            y=province_disp["provincia_codigo"],
+            orientation="h",
+            name="Provincia",
+            marker_color="#78A083",
         ),
-        row=positions[5][0], col=positions[5][1],
+        row=positions[5][0],
+        col=positions[5][1],
     )
     empty_panels = (
         (chain_disp, positions[4], "x3 domain", "y3 domain"),
@@ -469,17 +498,21 @@ def _write_dashboard(
     for banner, group in sensitivity_latest.groupby("banner_label", sort=True):
         figure.add_trace(
             go.Scatter(
-                x=group["raw_index"], y=group["exclude_critical_index"],
+                x=group["raw_index"],
+                y=group["exclude_critical_index"],
                 mode="markers" if mobile else "markers+text",
                 text=None if mobile else [banner] * len(group),
                 textposition="top center",
-                marker={"size": 11}, name=f"Sensibilidad | {banner}",
+                marker={"size": 11},
+                name=f"Sensibilidad | {banner}",
                 showlegend=mobile,
                 hovertemplate=(
                     f"{banner}<br>\u00cdndice raw: %{{x:.2f}}"
                     "<br>Sin cr\u00edticos: %{y:.2f}<extra></extra>"
                 ),
-            ), row=positions[6][0], col=positions[6][1],
+            ),
+            row=positions[6][0],
+            col=positions[6][1],
         )
     if not sensitivity_latest.empty:
         sensitivity_min = float(
@@ -497,15 +530,14 @@ def _write_dashboard(
                 hoverinfo="skip",
                 showlegend=False,
             ),
-            row=positions[6][0], col=positions[6][1],
+            row=positions[6][0],
+            col=positions[6][1],
         )
     figure.add_trace(
         go.Bar(
-            x=health["snapshot_date"], y=health["store_coverage_ratio"],
-            marker_color=[
-                "#167D8D" if value else "#B94A48"
-                for value in health["source_healthy"]
-            ],
+            x=health["snapshot_date"],
+            y=health["store_coverage_ratio"],
+            marker_color=["#167D8D" if value else "#B94A48" for value in health["source_healthy"]],
             customdata=health[["reporting_stores", "source_healthy"]],
             hovertemplate=(
                 "Fecha: %{x|%d/%m/%Y}<br>Tiendas vs. mediana: %{y:.1%}"
@@ -513,16 +545,20 @@ def _write_dashboard(
                 "<br>Fuente saludable: %{customdata[1]}<extra></extra>"
             ),
             name="Tiendas vs. mediana 7d",
-        ), row=positions[7][0], col=positions[7][1],
+        ),
+        row=positions[7][0],
+        col=positions[7][1],
     )
 
     figure.update_layout(
         title={
             "text": (
-                ("Precios Claros | Pricing y canasta" if mobile
-                 else "Precios Claros | Nivel, dispersi\u00f3n y canasta comparable")
-                +
-                f"<br><sup>Build {validation.build_id[:8]} | Corte {validation.as_of_date} | "
+                (
+                    "Precios Claros | Pricing y canasta"
+                    if mobile
+                    else "Precios Claros | Nivel, dispersi\u00f3n y canasta comparable"
+                )
+                + f"<br><sup>Build {validation.build_id[:8]} | Corte {validation.as_of_date} | "
                 f"Confianza {validation.confidence}</sup>"
             ),
             "x": 0.02,
@@ -534,7 +570,8 @@ def _write_dashboard(
         height=height,
         width=None,
         legend={
-            "orientation": "h", "y": -0.04,
+            "orientation": "h",
+            "y": -0.04,
             "font": {"size": 9 if mobile else 12},
         },
         margin={
@@ -557,14 +594,18 @@ def _write_dashboard(
     figure.update_xaxes(title_text="\u00cdndice raw", row=positions[6][0], col=positions[6][1])
     figure.update_yaxes(
         title_text="\u00cdndice sin precios cr\u00edticos",
-        row=positions[6][0], col=positions[6][1],
+        row=positions[6][0],
+        col=positions[6][1],
     )
     figure.update_xaxes(tickformat="%d %b", row=positions[2][0], col=positions[2][1])
     figure.update_xaxes(tickformat="%d %b", row=positions[7][0], col=positions[7][1])
     file_name = "dashboard_mobile.html" if mobile else "dashboard_pricing_canasta.html"
     path = OUTPUT_DIR / file_name
     figure.write_html(
-        path, include_plotlyjs=True, full_html=True, config={"responsive": True},
+        path,
+        include_plotlyjs=True,
+        full_html=True,
+        config={"responsive": True},
         default_width="100%",
     )
     _enhance_dashboard_html(path)
@@ -581,9 +622,7 @@ def _write_dashboard(
     return path
 
 
-def _write_executive_summary(
-    frames: dict[str, pd.DataFrame], validation: ValidationResult
-) -> Path:
+def _write_executive_summary(frames: dict[str, pd.DataFrame], validation: ValidationResult) -> Path:
     publishable_index = frames["index_daily"]
     publishable_index = publishable_index[publishable_index["publishable"]]
     if publishable_index.empty:
@@ -607,9 +646,15 @@ def _write_executive_summary(
         & (dispersion["coverage_status"] == "PUBLISHABLE")
         & dispersion["median_dispersion_clean"].notna()
     ]
-    chain_disp = dispersion[dispersion["dispersion_level"] == "BANNER"].sort_values("median_dispersion_clean")
-    province_disp = dispersion[dispersion["dispersion_level"] == "PROVINCE"].sort_values("median_dispersion_clean")
-    combo_disp = dispersion[dispersion["dispersion_level"] == "BANNER_PROVINCE"].sort_values("median_dispersion_clean")
+    chain_disp = dispersion[dispersion["dispersion_level"] == "BANNER"].sort_values(
+        "median_dispersion_clean"
+    )
+    province_disp = dispersion[dispersion["dispersion_level"] == "PROVINCE"].sort_values(
+        "median_dispersion_clean"
+    )
+    combo_disp = dispersion[dispersion["dispersion_level"] == "BANNER_PROVINCE"].sort_values(
+        "median_dispersion_clean"
+    )
     if chain_disp.empty:
         chain_finding = "ninguna cadena alcanzo cobertura publicable en el ultimo corte."
     else:

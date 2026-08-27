@@ -386,10 +386,17 @@ def _log_ingestion(
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         [
-            str(run_id), snapshot_date, package, file_name,
-            metrics.get("source_rows"), loaded_rows, metrics.get("footer_rows", 0),
-            metrics.get("null_bytes_removed", 0), metrics.get("reconstructed_lines", 0),
-            status, details,
+            str(run_id),
+            snapshot_date,
+            package,
+            file_name,
+            metrics.get("source_rows"),
+            loaded_rows,
+            metrics.get("footer_rows", 0),
+            metrics.get("null_bytes_removed", 0),
+            metrics.get("reconstructed_lines", 0),
+            status,
+            details,
         ],
     )
 
@@ -422,8 +429,15 @@ def _ingest_package(
         if not re.search(KNOWN_EMPTY_PACKAGE_PATTERN, package_name, flags=re.IGNORECASE):
             raise SchemaContractError(f"Paquete ZIP vacio no autorizado: {package_name}")
         _log_ingestion(
-            connection, run_id, snapshot_date, package_name, package_name, {}, 0,
-            "source_empty", "Paquete vacio conocido y explicitamente permitido.",
+            connection,
+            run_id,
+            snapshot_date,
+            package_name,
+            package_name,
+            {},
+            0,
+            "source_empty",
+            "Paquete vacio conocido y explicitamente permitido.",
         )
         return 0, 1
 
@@ -455,8 +469,13 @@ def _ingest_package(
                     if metrics["null_bytes_removed"]:
                         warnings += 1
                     _log_ingestion(
-                        connection, run_id, snapshot_date, package_name, file_name,
-                        metrics, loaded_rows,
+                        connection,
+                        run_id,
+                        snapshot_date,
+                        package_name,
+                        file_name,
+                        metrics,
+                        loaded_rows,
                     )
                     print(
                         f"[ingest] {snapshot_date} {package_name} {file_name}: "
@@ -576,8 +595,13 @@ def ingest_snapshot(
             ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             """,
             [
-                snapshot_date, str(run_id), source_hash, str(outer_path.resolve()),
-                outer_path.stat().st_size, package_count, warnings,
+                snapshot_date,
+                str(run_id),
+                source_hash,
+                str(outer_path.resolve()),
+                outer_path.stat().st_size,
+                package_count,
+                warnings,
             ],
         )
         connection.execute(

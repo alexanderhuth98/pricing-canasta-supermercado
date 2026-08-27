@@ -22,8 +22,13 @@ def test_all_stage_propagates_as_of_force_and_order(monkeypatch):
         sys,
         "argv",
         [
-            "pipeline", "all", "--force", "--as-of", "2026-08-02",
-            "--only-snapshot", "2026-08-02",
+            "pipeline",
+            "all",
+            "--force",
+            "--as-of",
+            "2026-08-02",
+            "--only-snapshot",
+            "2026-08-02",
         ],
     )
     pipeline.main()

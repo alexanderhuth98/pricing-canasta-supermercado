@@ -4,6 +4,8 @@
 [![Dashboard](https://img.shields.io/badge/dashboard-GitHub%20Pages-0969da)](https://alexanderhuth98.github.io/pricing-canasta-supermercado/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+[Versión en español](README.md)
+
 End-to-end Data Analytics portfolio project built from Argentina's official
 **Precios Claros - SEPA** national snapshots.
 
@@ -67,6 +69,14 @@ its resources and is not a historical archive.
 Raw ZIP files, intermediates and the DuckDB warehouse are excluded from Git. Curated
 aggregates live in `portfolio_data/`, reports in `reports/2026-08-02/`, the web dashboard
 in `site/`, and PBIX/XLSX/offline HTML files are distributed as GitHub Release assets.
+
+## Quality and CI
+
+The repository includes 60 tests and enforces at least 80% coverage. GitHub Actions and
+`.gitlab-ci.yml` use the locked environment for Ruff, pytest and dependency auditing;
+GitHub additionally checks local links, scans history for secrets and validates the
+versioned PBIP structure. Run `powerbi/validate_pbip.ps1` locally for static checks plus
+TOM deserialization with Power BI Desktop.
 
 ## Limitations
 

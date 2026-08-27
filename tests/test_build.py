@@ -37,9 +37,12 @@ def test_full_build_math_and_lineage(fixture_raw, tmp_path):
 
     connection = duckdb.connect(str(database), read_only=True)
     try:
-        assert connection.execute(
-            "SELECT COUNT(DISTINCT snapshot_date) FROM mart_price_product_daily"
-        ).fetchone()[0] == 7
+        assert (
+            connection.execute(
+                "SELECT COUNT(DISTINCT snapshot_date) FROM mart_price_product_daily"
+            ).fetchone()[0]
+            == 7
+        )
         assert connection.execute(
             "SELECT min(common_gtins), max(common_gtins) FROM mart_banner_index_daily"
         ).fetchone() == (8, 8)
@@ -50,9 +53,7 @@ def test_full_build_math_and_lineage(fixture_raw, tmp_path):
             """
         ).fetchall()
         assert all(value[0] == pytest.approx(100, abs=1e-9) for value in centers)
-        assert connection.execute(
-            "SELECT COUNT(*) FROM dim_basket_component"
-        ).fetchone()[0] == 8
+        assert connection.execute("SELECT COUNT(*) FROM dim_basket_component").fetchone()[0] == 8
         basket_cost = connection.execute(
             """
             SELECT branch_median_cost FROM mart_basket_banner_daily
@@ -61,12 +62,14 @@ def test_full_build_math_and_lineage(fixture_raw, tmp_path):
             """
         ).fetchone()[0]
         assert float(basket_cost) == pytest.approx(9069.12, abs=0.01)
-        assert connection.execute(
-            "SELECT COUNT(*) FROM quality_checks WHERE severity = 'high' AND failed_rows > 0"
-        ).fetchone()[0] == 0
+        assert (
+            connection.execute(
+                "SELECT COUNT(*) FROM quality_checks WHERE severity = 'high' AND failed_rows > 0"
+            ).fetchone()[0]
+            == 0
+        )
         assert {
-            row[0]
-            for row in connection.execute("SELECT test_name FROM quality_checks").fetchall()
+            row[0] for row in connection.execute("SELECT test_name FROM quality_checks").fetchall()
         } == EXPECTED_QUALITY_CHECKS
     finally:
         connection.close()
@@ -92,29 +95,38 @@ def test_invalid_geography_never_becomes_publishable(fixture_raw, tmp_path):
     build_analytics(as_of=date(2026, 8, 2), database_path=database)
     connection = duckdb.connect(str(database), read_only=True)
     try:
-        assert connection.execute(
-            """
+        assert (
+            connection.execute(
+                """
             SELECT COUNT(*)
             FROM mart_dispersion_entity_daily
             WHERE dispersion_level IN ('PROVINCE', 'BANNER_PROVINCE')
               AND (provincia_codigo IS NULL OR provincia_codigo NOT LIKE 'AR-%')
               AND coverage_status = 'PUBLISHABLE'
             """
-        ).fetchone()[0] == 0
-        assert connection.execute(
-            """
+            ).fetchone()[0]
+            == 0
+        )
+        assert (
+            connection.execute(
+                """
             SELECT COUNT(*)
             FROM mart_basket_banner_province_daily
             WHERE (provincia_codigo IS NULL OR provincia_codigo NOT LIKE 'AR-%')
               AND coverage_status = 'PUBLISHABLE'
             """
-        ).fetchone()[0] == 0
-        assert connection.execute(
-            """
+            ).fetchone()[0]
+            == 0
+        )
+        assert (
+            connection.execute(
+                """
             SELECT failed_rows FROM quality_checks
             WHERE test_name = 'published_invalid_geography'
             """
-        ).fetchone()[0] == 0
+            ).fetchone()[0]
+            == 0
+        )
     finally:
         connection.close()
 
@@ -142,7 +154,6 @@ def test_build_rejects_duplicate_global_grain(fixture_raw, tmp_path):
         build_analytics(as_of=date(2026, 8, 2), database_path=database)
 
 
-
 def test_interrupted_build_rolls_back_all_marts(fixture_raw, tmp_path):
     _, archives = fixture_raw
     database = tmp_path / "rollback.duckdb"
@@ -164,8 +175,11 @@ def test_interrupted_build_rolls_back_all_marts(fixture_raw, tmp_path):
         assert connection.execute(
             "SELECT COUNT(DISTINCT build_id), min(build_id::VARCHAR) FROM dim_store_daily"
         ).fetchone() == (1, str(published))
-        assert connection.execute(
-            "SELECT status FROM pipeline_runs WHERE stage = 'build' ORDER BY started_at DESC LIMIT 1"
-        ).fetchone()[0] == "failed"
+        assert (
+            connection.execute(
+                "SELECT status FROM pipeline_runs WHERE stage = 'build' ORDER BY started_at DESC LIMIT 1"
+            ).fetchone()[0]
+            == "failed"
+        )
     finally:
         connection.close()

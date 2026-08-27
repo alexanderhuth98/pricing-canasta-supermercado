@@ -139,14 +139,10 @@ def _verify_lineage(connection: duckdb.DuckDBPyConnection, build_id: UUID) -> No
                 raise RuntimeError(f"El build dejo vacia la tabla requerida {table}.")
             continue
         if minimum_id != build_id or maximum_id != build_id:
-            raise RuntimeError(
-                f"Linaje invalido en {table}: build_ids={(minimum_id, maximum_id)}."
-            )
+            raise RuntimeError(f"Linaje invalido en {table}: build_ids={(minimum_id, maximum_id)}.")
 
 
-def _verify_quality_check_inventory(
-    connection: duckdb.DuckDBPyConnection, build_id: UUID
-) -> None:
+def _verify_quality_check_inventory(connection: duckdb.DuckDBPyConnection, build_id: UUID) -> None:
     actual = {
         row[0]
         for row in connection.execute(

@@ -113,6 +113,7 @@ cero y no habilita rankings territoriales sin cobertura.
 - `PricingCanasta.pbix`: copia binaria validada, distribuida como activo de GitHub Release
   y excluida del historial Git.
 - `build_pbip.ps1`: generador reproducible del PBIP a partir de `portfolio_data/`.
+- `validate_pbip.ps1`: valida JSON, contratos CSV, referencias visuales y el modelo TOM.
 
 ![Panorama ejecutivo en Power BI](../docs/images/powerbi_panorama.png)
 
@@ -135,6 +136,24 @@ El generador detecta Power BI Desktop y sus ensamblados TOM sin fijar una versi�
 Microsoft Store. Infiere tipos conservadores, conserva GTIN y claves como texto, crea el
 parámetro M `DataFolder` y valida `model.bim` con TOM antes de terminar. Si la detección
 automática falla, se puede indicar `-DesktopBin <ruta-al-binario-de-desktop>`.
+
+Validar el PBIP versionado sin modificarlo:
+
+```powershell
+powershell.exe -NoProfile -File .\powerbi\validate_pbip.ps1
+```
+
+Con una política corporativa `AllSigned`, usar la misma entrada estándar segura que para
+el generador:
+
+```powershell
+cmd.exe /d /c "type powerbi\validate_pbip.ps1 | powershell.exe -NoProfile -Command -"
+```
+
+El comando comprueba JSON, marcador portable, esquema y tipos de los CSV, referencias de
+visuales, páginas, tablas, relaciones y medidas; después deserializa `model.bim` con TOM.
+En CI, donde Power BI Desktop no está disponible, `-SkipTom` conserva todos los controles
+estáticos y omite únicamente la deserialización con ensamblados de Desktop.
 
 El `model.bim` versionado usa `<PORTFOLIO_DATA_PATH>` para no publicar rutas personales.
 Ejecutar el generador sin `PortableModel` después de clonar reemplaza ese marcador por la

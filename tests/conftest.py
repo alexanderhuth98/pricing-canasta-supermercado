@@ -63,28 +63,71 @@ def create_snapshot_zip(
     for chain_index, ((commerce_id, banner_id, banner_name), factor) in enumerate(
         zip(SCOPE, chain_factors, strict=False), start=1
     ):
-        commerce_rows = [[
-            commerce_id, banner_id, f"30{chain_index:09d}9", banner_name,
-            banner_name, "https://example.test", f"{snapshot_date}T04:00:00-03:00", "1.0",
-        ]]
+        commerce_rows = [
+            [
+                commerce_id,
+                banner_id,
+                f"30{chain_index:09d}9",
+                banner_name,
+                banner_name,
+                "https://example.test",
+                f"{snapshot_date}T04:00:00-03:00",
+                "1.0",
+            ]
+        ]
         store_rows = []
         product_rows = []
         for store_number in range(1, 21):
             store_id = str(store_number)
-            store_rows.append([
-                commerce_id, banner_id, store_id, f"Sucursal {store_number}", "Supermercado",
-                "Calle", str(100 + store_number), "-34.60", "-58.40", "", "Centro",
-                "1000", "CABA", "AR-C", "08:00-20:00", "08:00-20:00",
-                "08:00-20:00", "08:00-20:00", "08:00-20:00", "08:00-20:00",
-                "08:00-20:00",
-            ])
+            store_rows.append(
+                [
+                    commerce_id,
+                    banner_id,
+                    store_id,
+                    f"Sucursal {store_number}",
+                    "Supermercado",
+                    "Calle",
+                    str(100 + store_number),
+                    "-34.60",
+                    "-58.40",
+                    "",
+                    "Centro",
+                    "1000",
+                    "CABA",
+                    "AR-C",
+                    "08:00-20:00",
+                    "08:00-20:00",
+                    "08:00-20:00",
+                    "08:00-20:00",
+                    "08:00-20:00",
+                    "08:00-20:00",
+                    "08:00-20:00",
+                ]
+            )
             for product_id, description, quantity, unit, brand, base_price in PRODUCTS:
                 daily_factor = 1 + (snapshot_date.day % 3 - 1) * 0.005
                 price = round(base_price * factor * daily_factor, 2)
-                product_rows.append([
-                    commerce_id, banner_id, store_id, product_id, "1", description,
-                    quantity, unit, brand, price, price, quantity, unit, "", "", "", "",
-                ])
+                product_rows.append(
+                    [
+                        commerce_id,
+                        banner_id,
+                        store_id,
+                        product_id,
+                        "1",
+                        description,
+                        quantity,
+                        unit,
+                        brand,
+                        price,
+                        price,
+                        quantity,
+                        unit,
+                        "",
+                        "",
+                        "",
+                        "",
+                    ]
+                )
 
         files = {
             "comercio.csv": _csv_bytes(EXPECTED_COLUMNS["comercio.csv"], commerce_rows),
@@ -110,5 +153,7 @@ def create_snapshot_zip(
 def fixture_raw(tmp_path):
     raw_root = tmp_path / "raw"
     start = date(2026, 7, 27)
-    archives = [create_snapshot_zip(raw_root, start + timedelta(days=offset)) for offset in range(7)]
+    archives = [
+        create_snapshot_zip(raw_root, start + timedelta(days=offset)) for offset in range(7)
+    ]
     return raw_root, archives

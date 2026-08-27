@@ -23,9 +23,7 @@ def test_sanitize_accepts_bom_and_removes_only_final_footer(tmp_path):
 
 
 def test_documented_wrapped_record_is_reconstructed_and_counted(tmp_path):
-    source = io.BytesIO(
-        b"a|b|c|d\n1|2\n|3\n|4\nUltima actualizacion: now\n"
-    )
+    source = io.BytesIO(b"a|b|c|d\n1|2\n|3\n|4\nUltima actualizacion: now\n")
     destination = tmp_path / "wrapped.csv"
     metrics = sanitize_csv(source, destination, ["a", "b", "c", "d"])
     assert destination.read_text(encoding="utf-8") == "a|b|c|d\n1|2|3|4\n"

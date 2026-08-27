@@ -19,10 +19,7 @@ WINDOW_DAYS = 7
 DUCKDB_THREADS = int(os.getenv("DUCKDB_THREADS", "4"))
 KNOWN_EMPTY_PACKAGE_PATTERN = r"comercio-sepa-36_"
 
-CATALOG_URL = (
-    "https://datos.gob.ar/api/3/action/"
-    "package_show?id=precios-claros-base-sepa"
-)
+CATALOG_URL = "https://datos.gob.ar/api/3/action/package_show?id=precios-claros-base-sepa"
 
 EXPECTED_COLUMNS = {
     "comercio.csv": [

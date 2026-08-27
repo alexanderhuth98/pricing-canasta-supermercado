@@ -79,9 +79,7 @@ def test_catalog_and_resource_allowlists_accept_only_expected_resources():
     )
     _validate_resource_url(OFFICIAL_RESOURCE_URL, "domingo")
     with pytest.raises(ValueError, match="catalogo"):
-        _validate_catalog_url(
-            "https://datos.gob.ar/api/3/action/package_show?id=otro-dataset"
-        )
+        _validate_catalog_url("https://datos.gob.ar/api/3/action/package_show?id=otro-dataset")
 
 
 def test_validate_zip_requires_one_date_and_valid_crc(tmp_path):
@@ -141,9 +139,7 @@ class _FakeSession:
         return False
 
 
-def test_download_resource_streams_validates_and_reuses_hash(
-    tmp_path, monkeypatch
-):
+def test_download_resource_streams_validates_and_reuses_hash(tmp_path, monkeypatch):
     import pricing_canasta.download as module
 
     source = tmp_path / "source.zip"
@@ -196,7 +192,5 @@ def test_download_rejects_stream_over_limit_and_removes_partial(tmp_path, monkey
     monkeypatch.setattr(module, "_session", lambda: _FakeSession(response))
 
     with pytest.raises(ValueError, match="MAX_HTTP_DOWNLOAD_BYTES"):
-        _download_resource(
-            {"url": OFFICIAL_RESOURCE_URL, "name": "Domingo"}, []
-        )
+        _download_resource({"url": OFFICIAL_RESOURCE_URL, "name": "Domingo"}, [])
     assert list((tmp_path / "raw" / "_landing").glob("*.part")) == []

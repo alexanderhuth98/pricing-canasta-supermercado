@@ -4,6 +4,8 @@
 [![GitHub Pages](https://img.shields.io/badge/dashboard-GitHub%20Pages-0969da)](https://alexanderhuth98.github.io/pricing-canasta-supermercado/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+[English version](README_EN.md)
+
 Caso de Data Analytics sobre 97,5 millones de precios publicados por **Precios Claros
 - Base SEPA**. Compara cadenas con productos exactamente equivalentes, mide el costo de
 una canasta fija y controla cobertura, outliers y calidad antes de publicar rankings.
@@ -152,6 +154,8 @@ su disponibilidad histórica. Consulte [acceso a datos](docs/data_access.md).
 - Cobertura de código superior al 80%.
 - Cero quality gates altos en el build publicado.
 - 97.485.870 filas fuente reconciliadas sin pérdida.
+- GitHub Actions y `.gitlab-ci.yml` ejecutan instalación bloqueada, Ruff, cobertura y
+  auditoría de dependencias; GitHub añade enlaces, secretos y validación estática PBIP.
 
 ## Limitaciones
 

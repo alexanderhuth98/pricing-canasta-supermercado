@@ -21,9 +21,7 @@ def test_excel_value_preserves_numeric_and_safe_string_cells():
     assert _excel_value("safe text") == "safe text"
 
 
-def test_export_generates_excel_dashboards_parquet_and_report(
-    fixture_raw, tmp_path, monkeypatch
-):
+def test_export_generates_excel_dashboards_parquet_and_report(fixture_raw, tmp_path, monkeypatch):
     _, archives = fixture_raw
     database = tmp_path / "export.duckdb"
     connection = connect(database_path=database, interim_dir=tmp_path / "interim")
@@ -66,8 +64,7 @@ def test_export_generates_excel_dashboards_parquet_and_report(
     assert (portfolio_dir / "dispersion_product_sample.csv").stat().st_size > 0
     assert (portfolio_dir / "price_anomalies_sample.csv").stat().st_size > 0
     assert all(
-        not (portfolio_dir / f"{name}.csv").exists()
-        for name in export_module.LEGACY_EXPORT_FILES
+        not (portfolio_dir / f"{name}.csv").exists() for name in export_module.LEGACY_EXPORT_FILES
     )
     mobile = (output_dir / "dashboard_mobile.html").read_text(encoding="utf-8")
     assert '<meta name="viewport"' in mobile

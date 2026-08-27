@@ -37,6 +37,7 @@ def test_invalid_gtin_format_returns_null(raw):
 def test_restricted_prefix_is_not_global():
     connection = duckdb.connect(":memory:")
     connection.execute((SQL_DIR / "01_schema.sql").read_text(encoding="utf-8"))
-    assert connection.execute(
-        "SELECT classify_product_code('20000000', true, true)"
-    ).fetchone()[0] == "RESTRICTED_LOCAL"
+    assert (
+        connection.execute("SELECT classify_product_code('20000000', true, true)").fetchone()[0]
+        == "RESTRICTED_LOCAL"
+    )

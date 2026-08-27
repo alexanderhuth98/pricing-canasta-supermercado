@@ -191,8 +191,7 @@ reduce mecanicamente la calidad de datos si todos los controles son satisfactori
     )
     if raise_on_failure and result.high_failures:
         raise RuntimeError(
-            f"Quality gate bloqueado: {result.high_failures} fallas altas. "
-            f"Consulta {report_path}."
+            f"Quality gate bloqueado: {result.high_failures} fallas altas. Consulta {report_path}."
         )
     return result
 

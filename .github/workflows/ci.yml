@@ -28,7 +28,10 @@ jobs:
         run: uv sync --extra dev --locked
 
       - name: Lint
-        run: uv run ruff check src tests
+        run: uv run ruff check .
+
+      - name: Format
+        run: uv run ruff format --check .
 
       - name: Tests and coverage
         run: >-
@@ -48,6 +51,10 @@ jobs:
         with:
           args: --offline --no-progress "./**/*.md"
           fail: true
+
+      - name: Validate Power BI project
+        shell: pwsh
+        run: ./powerbi/validate_pbip.ps1 -SkipTom
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v7
@@ -70,3 +77,4 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"

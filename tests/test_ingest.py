@@ -26,9 +26,7 @@ def test_ingestion_is_idempotent_and_force_replaces(fixture_raw, tmp_path):
 
 def test_idempotent_resume_marks_orphan_ingest_interrupted(fixture_raw, tmp_path):
     _, archives = fixture_raw
-    connection = connect(
-        database_path=tmp_path / "resume.duckdb", interim_dir=tmp_path / "interim"
-    )
+    connection = connect(database_path=tmp_path / "resume.duckdb", interim_dir=tmp_path / "interim")
     try:
         ingest_snapshot(connection, archives[0])
         connection.execute(
@@ -40,13 +38,16 @@ def test_idempotent_resume_marks_orphan_ingest_interrupted(fixture_raw, tmp_path
             """
         )
         assert ingest_snapshot(connection, archives[0]) is None
-        assert connection.execute(
-            """
+        assert (
+            connection.execute(
+                """
             SELECT status FROM pipeline_runs
             WHERE stage = 'ingest' AND snapshot_date = DATE '2026-07-27'
             ORDER BY started_at DESC LIMIT 1
             """
-        ).fetchone()[0] == "interrupted"
+            ).fetchone()[0]
+            == "interrupted"
+        )
     finally:
         connection.close()
 
@@ -75,9 +76,12 @@ def test_failed_force_rolls_back_previous_snapshot(fixture_raw, tmp_path):
         with pytest.raises(SchemaContractError):
             ingest_snapshot(connection, bad_target, force=True)
         assert connection.execute("SELECT COUNT(*) FROM fact_price").fetchone()[0] == count_before
-        assert connection.execute(
-            "SELECT active_ingest_run_id, raw_sha256 FROM snapshot_state"
-        ).fetchone() == before
+        assert (
+            connection.execute(
+                "SELECT active_ingest_run_id, raw_sha256 FROM snapshot_state"
+            ).fetchone()
+            == before
+        )
     finally:
         connection.close()
 
@@ -110,9 +114,7 @@ def test_zip_safety_rejects_member_count_limit(tmp_path, monkeypatch):
         ingest_module.validate_zip_safety(archive, archive_path.name)
 
 
-def test_zip_safety_rejects_member_and_total_uncompressed_limits(
-    tmp_path, monkeypatch
-):
+def test_zip_safety_rejects_member_and_total_uncompressed_limits(tmp_path, monkeypatch):
     archive_path = tmp_path / "large.zip"
     with zipfile.ZipFile(archive_path, "w") as archive:
         archive.writestr("one.csv", b"1234")
@@ -136,9 +138,7 @@ def test_zip_safety_rejects_member_and_total_uncompressed_limits(
 
 def test_zip_safety_rejects_excessive_compression_ratio(tmp_path, monkeypatch):
     archive_path = tmp_path / "bomb.zip"
-    with zipfile.ZipFile(
-        archive_path, "w", compression=zipfile.ZIP_DEFLATED
-    ) as archive:
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("repeated.csv", b"0" * 10_000)
     monkeypatch.setattr(ingest_module, "MAX_ZIP_COMPRESSION_RATIO", 10)
     with (
@@ -158,7 +158,9 @@ def test_wrong_header_fails_without_publishing(tmp_path):
         return files
 
     archive = create_snapshot_zip(tmp_path / "raw", date(2026, 7, 27), transform=reorder_header)
-    connection = connect(database_path=tmp_path / "bad_header.duckdb", interim_dir=tmp_path / "interim")
+    connection = connect(
+        database_path=tmp_path / "bad_header.duckdb", interim_dir=tmp_path / "interim"
+    )
     try:
         with pytest.raises(SchemaContractError, match="Esquema CSV incompatible"):
             ingest_snapshot(connection, archive)
@@ -178,7 +180,9 @@ def test_malformed_quoted_row_fails_strict_parser(tmp_path):
         return files
 
     archive = create_snapshot_zip(tmp_path / "raw", date(2026, 7, 27), transform=break_quoting)
-    connection = connect(database_path=tmp_path / "malformed.duckdb", interim_dir=tmp_path / "interim")
+    connection = connect(
+        database_path=tmp_path / "malformed.duckdb", interim_dir=tmp_path / "interim"
+    )
     try:
         with pytest.raises(Exception, match="CSV|quote|quoted|column|delimiter"):
             ingest_snapshot(connection, archive)
@@ -195,25 +199,24 @@ def test_blank_productos_ean_is_loaded_as_false(tmp_path):
             )
         return files
 
-    archive = create_snapshot_zip(
-        tmp_path / "raw", date(2026, 7, 27), transform=blank_ean
-    )
+    archive = create_snapshot_zip(tmp_path / "raw", date(2026, 7, 27), transform=blank_ean)
     connection = connect(
         database_path=tmp_path / "blank_ean.duckdb",
         interim_dir=tmp_path / "interim",
     )
     try:
         ingest_snapshot(connection, archive)
-        assert connection.execute(
-            "SELECT COUNT(*) FROM fact_price WHERE NOT productos_ean"
-        ).fetchone()[0] > 0
+        assert (
+            connection.execute(
+                "SELECT COUNT(*) FROM fact_price WHERE NOT productos_ean"
+            ).fetchone()[0]
+            > 0
+        )
     finally:
         connection.close()
 
 
-def test_ingest_all_fails_when_filters_select_no_snapshot(
-    fixture_raw, tmp_path, monkeypatch
-):
+def test_ingest_all_fails_when_filters_select_no_snapshot(fixture_raw, tmp_path, monkeypatch):
     raw_root, _ = fixture_raw
     monkeypatch.setattr(ingest_module, "RAW_DIR", raw_root)
     with pytest.raises(FileNotFoundError, match="only_snapshot"):
