@@ -322,9 +322,7 @@ def _date_label(frame: pd.DataFrame) -> str:
     return pd.Timestamp(frame["snapshot_date"].max()).strftime("%d/%m/%Y")
 
 
-def _dispersion_panel_text(
-    label: str, frame: pd.DataFrame, as_of_date: date
-) -> tuple[str, str]:
+def _dispersion_panel_text(label: str, frame: pd.DataFrame, as_of_date: date) -> tuple[str, str]:
     if frame.empty:
         title = f"{label} | sin dato publicable"
         notice = f"{label}: sin dato publicable en la ventana observada."
@@ -336,10 +334,11 @@ def _dispersion_panel_text(
     notice = f"{label}: dato efectivo {effective_label}."
     if effective_date.date() < as_of_date:
         global_label = as_of_date.strftime("%d/%m/%Y")
-        warning = f"El corte global del {global_label} no tuvo cobertura publicable para este panel."
+        warning = (
+            f"El corte global del {global_label} no tuvo cobertura publicable para este panel."
+        )
         title += (
-            f"<br><span style='color:#f3ce62'>Corte {global_label}: "
-            "sin cobertura publicable</span>"
+            f"<br><span style='color:#f3ce62'>Corte {global_label}: sin cobertura publicable</span>"
         )
         notice += f" {warning}"
     return title, notice
@@ -547,9 +546,9 @@ def _write_dashboard(
         go.Indicator(
             mode="number",
             value=float(common_gtins),
-            number={"font": {"size": 54, "color": "#9ef6e5"}} if mobile else {
-                "font": {"color": "#9ef6e5"}
-            },
+            number={"font": {"size": 54, "color": "#9ef6e5"}}
+            if mobile
+            else {"font": {"color": "#9ef6e5"}},
         ),
         row=positions[0][0],
         col=positions[0][1],
@@ -822,9 +821,9 @@ def _write_executive_summary(frames: dict[str, pd.DataFrame], validation: Valida
     chain_disp = chain_panel[chain_panel["median_dispersion_clean"].notna()].sort_values(
         "median_dispersion_clean"
     )
-    province_disp = province_panel[
-        province_panel["median_dispersion_clean"].notna()
-    ].sort_values("median_dispersion_clean")
+    province_disp = province_panel[province_panel["median_dispersion_clean"].notna()].sort_values(
+        "median_dispersion_clean"
+    )
     combo_disp = combo_panel[combo_panel["median_dispersion_clean"].notna()].sort_values(
         "median_dispersion_clean"
     )
