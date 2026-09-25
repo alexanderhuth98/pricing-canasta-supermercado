@@ -1,5 +1,5 @@
 import json
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from itertools import islice
 from pathlib import Path
 from uuid import UUID
@@ -128,6 +128,50 @@ SMALL_EXPORTS = {
     """,
 }
 
+DASHBOARD_CONFIG = {
+    "responsive": True,
+    "displayModeBar": True,
+    "displaylogo": False,
+    "scrollZoom": False,
+    "doubleClick": "reset+autosize",
+    "locale": "es",
+    "locales": {
+        "es": {
+            "dictionary": {
+                "Autoscale": "Ajustar escala",
+                "Download plot as a PNG": "Descargar gráfico como PNG",
+                "Pan": "Desplazar",
+                "Reset axes": "Restablecer ejes",
+                "Zoom": "Ampliar o reducir",
+                "Zoom in": "Ampliar",
+                "Zoom out": "Reducir",
+            },
+            "format": {
+                "shortDays": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+                "shortMonths": [
+                    "Ene",
+                    "Feb",
+                    "Mar",
+                    "Abr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Ago",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dic",
+                ],
+                "date": "%d/%m/%Y",
+                "decimal": ",",
+                "thousands": ".",
+            },
+        }
+    },
+    "modeBarButtonsToAdd": ["zoom2d", "pan2d", "autoScale2d", "resetScale2d"],
+    "modeBarButtonsToRemove": ["select2d", "lasso2d"],
+}
+
 LEGACY_EXPORT_FILES = {
     "basket_summary",
     "dispersion_product",
@@ -212,11 +256,11 @@ def _write_excel(frames: dict[str, pd.DataFrame], validation: ValidationResult) 
     readme.title = "README"
     rows = [
         ("Proyecto", "Pricing y canasta de supermercado v2"),
-        ("Build", validation.build_id),
+        ("Versión", validation.build_id),
         ("Fecha de corte", str(validation.as_of_date)),
         ("Confianza", validation.confidence),
-        ("Indice", "Panel comun de GTIN; igual peso por producto y cadena."),
-        ("Dispersion", "P90-P10 relativo; valores raw y sin anomalias criticas."),
+        ("Índice", "Panel común de GTIN; igual peso por producto y cadena."),
+        ("Dispersión", "P90-P10 relativo; valores originales y sin anomalías críticas."),
         ("Canasta", "Ocho GTIN fijos; solo canastas completas; no se imputan faltantes."),
         ("Nacional", "Red de sucursales observada, no ponderada por poblacion."),
     ]
@@ -268,35 +312,124 @@ def _latest_publishable(frame: pd.DataFrame) -> pd.DataFrame:
     return publishable[publishable["snapshot_date"] == latest]
 
 
+def _latest_publishable_level(frame: pd.DataFrame, level: str) -> pd.DataFrame:
+    return _latest_publishable(frame[frame["dispersion_level"] == level])
+
+
 def _date_label(frame: pd.DataFrame) -> str:
     if frame.empty or "snapshot_date" not in frame:
         return "sin dato publicable"
     return pd.Timestamp(frame["snapshot_date"].max()).strftime("%d/%m/%Y")
 
 
-def _enhance_dashboard_html(path: Path) -> None:
+def _dispersion_panel_text(
+    label: str, frame: pd.DataFrame, as_of_date: date
+) -> tuple[str, str]:
+    if frame.empty:
+        title = f"{label} | sin dato publicable"
+        notice = f"{label}: sin dato publicable en la ventana observada."
+        return title, notice
+
+    effective_date = pd.Timestamp(frame["snapshot_date"].max())
+    effective_label = effective_date.strftime("%d/%m/%Y")
+    title = f"{label} | dato efectivo {effective_label}"
+    notice = f"{label}: dato efectivo {effective_label}."
+    if effective_date.date() < as_of_date:
+        global_label = as_of_date.strftime("%d/%m/%Y")
+        warning = f"El corte global del {global_label} no tuvo cobertura publicable para este panel."
+        title += (
+            f"<br><span style='color:#f3ce62'>Corte {global_label}: "
+            "sin cobertura publicable</span>"
+        )
+        notice += f" {warning}"
+    return title, notice
+
+
+def _enhance_dashboard_html(
+    path: Path, validation: ValidationResult, panel_notices: tuple[str, ...]
+) -> None:
     html = path.read_text(encoding="utf-8")
-    html = html.replace("<html>", '<html lang="es">', 1)
+    html = html.replace("<html>", '<html lang="es-AR">', 1)
     html = html.replace(
         "<head>",
         (
             '<head><meta name="viewport" '
             'content="width=device-width, initial-scale=1">'
             "<title>Pricing y canasta de supermercado</title>"
-            "<style>body{margin:0;background:#F6F2EA;}"
-            ".plotly-graph-div{width:100%!important;max-width:100%;}"
+            "<style>@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:"
+            "wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');"
+            ":root{--bg:#0b1111;--bg-deep:#080d0d;--surface:#171d1e;"
+            "--surface-raised:#1b2223;--surface-soft:#111819;--text:#edf1ef;"
+            "--muted:#a5aeaa;--dim:#89938f;--mint:#9ef6e5;"
+            "--mint-bright:#58e4d0;--amber:#f3ce62;"
+            "--border:rgba(158,246,229,.11);--border-strong:rgba(158,246,229,.25);}"
+            "*{box-sizing:border-box;}html{background:var(--bg-deep);}"
+            "body{margin:0;color:var(--text);background-color:var(--bg);"
+            "background-image:linear-gradient(var(--border) 1px,transparent 1px),"
+            "linear-gradient(90deg,var(--border) 1px,transparent 1px);"
+            "background-size:48px 48px;font-family:'Space Grotesk',Arial,sans-serif;}"
+            ".site-header,.dashboard-shell{width:min(1480px,calc(100% - 40px));margin:0 auto;}"
+            ".site-header{padding:42px 0 24px;border-bottom:1px solid var(--border-strong);}"
+            ".eyebrow,.site-meta,.view-help,.back-link,.reset-view{"
+            "font-family:'IBM Plex Mono',Consolas,monospace;}"
+            ".eyebrow{margin:0 0 12px;color:var(--mint-bright);font-size:.75rem;"
+            "letter-spacing:.12em;text-transform:uppercase;}"
+            "h1{max-width:900px;margin:0;font-size:clamp(2rem,5vw,4.6rem);"
+            "font-weight:600;line-height:.95;letter-spacing:-.045em;}"
+            ".site-description{max-width:780px;margin:22px 0 18px;color:var(--muted);"
+            "overflow-wrap:anywhere;"
+            "font-size:clamp(1rem,2vw,1.2rem);line-height:1.55;}"
+            ".site-meta{display:flex;flex-wrap:wrap;gap:8px 24px;color:var(--dim);font-size:.78rem;}"
+            ".site-meta span{min-width:0;overflow-wrap:anywhere;}"
+            ".back-link{display:inline-block;margin-top:24px;color:var(--mint);"
+            "text-underline-offset:4px;}"
+            ".back-link:hover,.back-link:focus-visible{color:var(--text);}"
+            ".dashboard-shell{padding:24px 0 48px;}"
+            ".panel-notices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));"
+            "border-top:1px solid var(--border);border-left:1px solid var(--border);"
+            "background:var(--surface-soft);}"
+            ".panel-notices p{margin:0;padding:14px 16px;border-right:1px solid var(--border);"
+            "border-bottom:1px solid var(--border);color:var(--amber);font-size:.88rem;line-height:1.45;}"
+            ".dashboard-toolbar{display:flex;align-items:center;justify-content:space-between;"
+            "gap:16px;padding:14px 0;}"
+            ".view-help{margin:0;color:var(--dim);font-size:.75rem;line-height:1.45;}"
+            ".reset-view{min-height:44px;padding:10px 14px;border:1px solid var(--border-strong);"
+            "border-radius:0;color:var(--bg-deep);background:var(--mint);font-weight:700;cursor:pointer;}"
+            ".reset-view:hover,.reset-view:focus-visible{background:var(--mint-bright);outline:none;}"
+            ".plotly-graph-div{width:100%!important;max-width:100%;"
+            "border:1px solid var(--border);background:var(--surface-soft);box-shadow:none;}"
+            ".modebar{opacity:1!important;}"
             ".sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;"
-            "overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}</style>"
+            "overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}"
+            "@media(max-width:700px){.site-header,.dashboard-shell{width:min(100% - 24px,1480px);}"
+            ".site-header{padding-top:28px}.panel-notices{grid-template-columns:1fr;}"
+            ".dashboard-toolbar{align-items:stretch;flex-direction:column;}"
+            ".reset-view{width:100%;}.view-help{order:2;}}</style>"
         ),
         1,
     )
+    notices = "".join(f"<p>{notice}</p>" for notice in panel_notices)
+    cut_label = validation.as_of_date.strftime("%d/%m/%Y")
     html = html.replace(
         "<body>",
         (
-            '<body><p class="sr-only">Dashboard de nivel de precios, canasta, '
-            "dispersion, sensibilidad y cobertura. El indice identifica el ultimo dia "
-            "comparable. Cada panel informa su fecha efectiva; "
-            "los datos suprimidos no se incluyen en rankings.</p>"
+            '<body><header class="site-header"><p class="eyebrow">Datos abiertos · Argentina</p>'
+            "<h1>Pricing y canasta de supermercado</h1>"
+            '<p class="site-description">Nivel de precios, dispersión y costo de una canasta '
+            "comparable, con cobertura y fechas efectivas visibles para interpretar cada panel.</p>"
+            f'<div class="site-meta"><span>Corte global: {cut_label}</span>'
+            "<span>Fuente: Precios Claros · Secretaría de Industria y Comercio</span>"
+            f"<span>Confianza del corte: {validation.confidence}</span></div>"
+            '<a class="back-link" href="https://alexanderhuth98.github.io/#proyectos">'
+            "← Volver a proyectos</a></header>"
+            '<main class="dashboard-shell"><p class="sr-only">Tablero de nivel de precios, '
+            "canasta, dispersión, sensibilidad y cobertura. El índice identifica el último día "
+            "comparable. Cada panel informa su fecha efectiva; los datos suprimidos no se incluyen "
+            "en clasificaciones.</p>"
+            f'<section class="panel-notices" aria-label="Vigencia de los paneles">{notices}</section>'
+            '<div class="dashboard-toolbar"><p class="view-help">Usá la barra del gráfico para '
+            "ampliar, desplazar o ajustar los ejes.</p>"
+            '<button class="reset-view" type="button">Restablecer vista</button></div>'
         ),
         1,
     )
@@ -305,7 +438,26 @@ def _enhance_dashboard_html(path: Path) -> None:
         '<div role="img" aria-label="Dashboard interactivo de pricing y canasta" id="',
         1,
     )
-    path.write_text(html, encoding="utf-8")
+    html = html.replace(
+        "</body>",
+        """<script>
+(() => {
+    const button = document.querySelector('.reset-view');
+    const graph = document.querySelector('.plotly-graph-div');
+    if (!button || !graph) return;
+    button.addEventListener('click', () => {
+        const update = {autosize: true};
+        Object.keys(graph.layout || {}).forEach((key) => {
+            if (/^[xy]axis\\d*$/.test(key)) update[`${key}.autorange`] = true;
+        });
+        Plotly.relayout(graph, update);
+    });
+})();
+</script></main></body>""",
+        1,
+    )
+    html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
+    path.write_text(html, encoding="utf-8", newline="\n")
 
 
 def _write_dashboard(
@@ -318,10 +470,12 @@ def _write_dashboard(
     )
     basket_banner = _latest_publishable(frames["basket_banner"])
     dispersion = frames["dispersion_entity"]
-    dispersion = dispersion[
-        (dispersion["snapshot_date"] == pd.Timestamp(validation.as_of_date))
-        & (dispersion["coverage_status"] == "PUBLISHABLE")
-    ]
+    chain_disp = _latest_publishable_level(dispersion, "BANNER").sort_values(
+        "median_dispersion_clean"
+    )
+    province_disp = _latest_publishable_level(dispersion, "PROVINCE").sort_values(
+        "median_dispersion_clean"
+    )
     health = frames["source_health"]
     sensitivity = frames["index_sensitivity"]
     sensitivity_latest = (
@@ -332,17 +486,22 @@ def _write_dashboard(
 
     index_date = _date_label(index_latest)
     basket_date = _date_label(basket_banner)
-    dispersion_date = validation.as_of_date.strftime("%d/%m/%Y")
+    chain_title, chain_notice = _dispersion_panel_text(
+        "Dispersión por cadena", chain_disp, validation.as_of_date
+    )
+    province_title, province_notice = _dispersion_panel_text(
+        "Dispersión por provincia", province_disp, validation.as_of_date
+    )
     window_start = pd.Timestamp(health["snapshot_date"].min()).strftime("%d/%m")
     window_end = pd.Timestamp(health["snapshot_date"].max()).strftime("%d/%m/%Y")
 
     subplot_titles = (
         f"GTIN comunes | \u00faltimo d\u00eda comparable {index_date}",
-        f"Salud cadena-dia | semana {window_start}-{window_end}",
+        f"Salud cadena-día | semana {window_start}-{window_end}",
         f"\u00cdndice de precios | \u00faltimo d\u00eda comparable {index_date}",
         f"Canasta publicable por cadena | {basket_date}",
-        f"Dispersi\u00f3n por cadena | corte calendario {dispersion_date}",
-        f"Dispersi\u00f3n por provincia | corte calendario {dispersion_date}",
+        chain_title,
+        province_title,
         f"Sensibilidad a extremos | {index_date}",
         f"Tiendas reportantes vs. mediana 7d | {window_start}-{window_end}",
     )
@@ -352,8 +511,8 @@ def _write_dashboard(
             f"Salud semanal | {window_start}-{window_end}",
             f"\u00cdndice | {index_date}",
             f"Canasta por cadena | {basket_date}",
-            f"Dispersi\u00f3n por cadena | {dispersion_date}",
-            f"Dispersi\u00f3n por provincia | {dispersion_date}",
+            chain_title,
+            province_title,
             f"Sensibilidad | {index_date}",
             f"Tiendas vs. mediana 7d | {window_start}-{window_end}",
         )
@@ -388,7 +547,9 @@ def _write_dashboard(
         go.Indicator(
             mode="number",
             value=float(common_gtins),
-            number={"font": {"size": 54}} if mobile else {},
+            number={"font": {"size": 54, "color": "#9ef6e5"}} if mobile else {
+                "font": {"color": "#9ef6e5"}
+            },
         ),
         row=positions[0][0],
         col=positions[0][1],
@@ -400,7 +561,7 @@ def _write_dashboard(
             number={
                 "suffix": "%",
                 "valueformat": ".1f",
-                **({"font": {"size": 54}} if mobile else {}),
+                "font": {"size": 54 if mobile else 42, "color": "#9ef6e5"},
             },
         ),
         row=positions[1][0],
@@ -432,7 +593,7 @@ def _write_dashboard(
         y1=100,
         xref="x domain",
         yref="y",
-        line={"dash": "dash", "color": "#526A7A"},
+        line={"dash": "dash", "color": "#89938f"},
     )
 
     figure.add_trace(
@@ -440,7 +601,7 @@ def _write_dashboard(
             x=basket_banner["branch_median_cost"],
             y=basket_banner["banner_label"],
             orientation="h",
-            marker_color="#D97941",
+            marker_color="#f3ce62",
             name="Canasta",
             customdata=basket_banner[["complete_stores", "completion_rate"]],
             hovertemplate="%{y}<br>$%{x:,.0f}<br>Sucursales: %{customdata[0]}<br>Cobertura: %{customdata[1]:.1%}<extra></extra>",
@@ -449,19 +610,13 @@ def _write_dashboard(
         col=positions[3][1],
     )
 
-    chain_disp = dispersion[dispersion["dispersion_level"] == "BANNER"].sort_values(
-        "median_dispersion_clean"
-    )
-    province_disp = dispersion[dispersion["dispersion_level"] == "PROVINCE"].sort_values(
-        "median_dispersion_clean"
-    )
     figure.add_trace(
         go.Bar(
             x=chain_disp["median_dispersion_clean"],
             y=chain_disp["banner_label"],
             orientation="h",
             name="Cadena",
-            marker_color="#167D8D",
+            marker_color="#58e4d0",
         ),
         row=positions[4][0],
         col=positions[4][1],
@@ -472,7 +627,7 @@ def _write_dashboard(
             y=province_disp["provincia_codigo"],
             orientation="h",
             name="Provincia",
-            marker_color="#78A083",
+            marker_color="#9ef6e5",
         ),
         row=positions[5][0],
         col=positions[5][1],
@@ -484,13 +639,13 @@ def _write_dashboard(
     for frame, position, xref, yref in empty_panels:
         if frame.empty:
             figure.add_annotation(
-                text="Sin cobertura publicable",
+                text="Sin cobertura publicable en la ventana observada",
                 x=0.5,
                 y=0.5,
                 xref=xref,
                 yref=yref,
                 showarrow=False,
-                font={"size": 14, "color": "#526A7A"},
+                font={"size": 14, "color": "#a5aeaa"},
             )
             figure.update_xaxes(visible=False, row=position[0], col=position[1])
             figure.update_yaxes(visible=False, row=position[0], col=position[1])
@@ -503,11 +658,11 @@ def _write_dashboard(
                 mode="markers" if mobile else "markers+text",
                 text=None if mobile else [banner] * len(group),
                 textposition="top center",
-                marker={"size": 11},
+                marker={"size": 11, "color": "#f3ce62"},
                 name=f"Sensibilidad | {banner}",
                 showlegend=mobile,
                 hovertemplate=(
-                    f"{banner}<br>\u00cdndice raw: %{{x:.2f}}"
+                    f"{banner}<br>\u00cdndice original: %{{x:.2f}}"
                     "<br>Sin cr\u00edticos: %{y:.2f}<extra></extra>"
                 ),
             ),
@@ -526,7 +681,7 @@ def _write_dashboard(
                 x=[sensitivity_min, sensitivity_max],
                 y=[sensitivity_min, sensitivity_max],
                 mode="lines",
-                line={"dash": "dot", "color": "#526A7A"},
+                line={"dash": "dot", "color": "#89938f"},
                 hoverinfo="skip",
                 showlegend=False,
             ),
@@ -537,8 +692,13 @@ def _write_dashboard(
         go.Bar(
             x=health["snapshot_date"],
             y=health["store_coverage_ratio"],
-            marker_color=["#167D8D" if value else "#B94A48" for value in health["source_healthy"]],
-            customdata=health[["reporting_stores", "source_healthy"]],
+            marker_color=["#58e4d0" if value else "#f3ce62" for value in health["source_healthy"]],
+            customdata=pd.DataFrame(
+                {
+                    "reporting_stores": health["reporting_stores"],
+                    "source_status": health["source_healthy"].map({True: "Sí", False: "No"}),
+                }
+            ),
             hovertemplate=(
                 "Fecha: %{x|%d/%m/%Y}<br>Tiendas vs. mediana: %{y:.1%}"
                 "<br>Tiendas reportantes: %{customdata[0]:,.0f}"
@@ -551,39 +711,38 @@ def _write_dashboard(
     )
 
     figure.update_layout(
-        title={
-            "text": (
-                (
-                    "Precios Claros | Pricing y canasta"
-                    if mobile
-                    else "Precios Claros | Nivel, dispersi\u00f3n y canasta comparable"
-                )
-                + f"<br><sup>Build {validation.build_id[:8]} | Corte {validation.as_of_date} | "
-                f"Confianza {validation.confidence}</sup>"
-            ),
-            "x": 0.02,
+        template="plotly_dark",
+        paper_bgcolor="#0b1111",
+        plot_bgcolor="#111819",
+        colorway=["#9ef6e5", "#58e4d0", "#f3ce62", "#a5aeaa", "#89938f"],
+        font={
+            "family": "Space Grotesk, Arial, sans-serif",
+            "color": "#edf1ef",
+            "size": 11 if mobile else 12,
         },
-        template="plotly_white",
-        paper_bgcolor="#F6F2EA",
-        plot_bgcolor="#FFFFFF",
-        font={"family": "Arial", "color": "#17324D", "size": 11 if mobile else 12},
         height=height,
         width=None,
         legend={
             "orientation": "h",
             "y": -0.04,
             "font": {"size": 9 if mobile else 12},
+            "bgcolor": "rgba(11,17,17,.88)",
         },
         margin={
             "l": 45 if mobile else 80,
             "r": 20 if mobile else 40,
-            "t": 110 if mobile else 130,
+            "t": 80 if mobile else 90,
             "b": 80 if mobile else 100,
         },
         autosize=True,
+        hoverlabel={
+            "bgcolor": "#1b2223",
+            "bordercolor": "rgba(158,246,229,.25)",
+            "font": {"family": "IBM Plex Mono, Consolas, monospace", "color": "#edf1ef"},
+        },
     )
     if mobile:
-        figure.update_annotations(font={"size": 11, "color": "#17324D"})
+        figure.update_annotations(font={"size": 11, "color": "#edf1ef"})
         figure.update_xaxes(tickfont={"size": 9}, title_font={"size": 10})
         figure.update_yaxes(tickfont={"size": 9}, title_font={"size": 10})
         figure.update_xaxes(nticks=4, row=positions[2][0], col=positions[2][1])
@@ -591,7 +750,7 @@ def _write_dashboard(
     figure.update_xaxes(tickformat=".0%", row=positions[4][0], col=positions[4][1])
     figure.update_xaxes(tickformat=".0%", row=positions[5][0], col=positions[5][1])
     figure.update_yaxes(tickformat=".0%", row=positions[7][0], col=positions[7][1])
-    figure.update_xaxes(title_text="\u00cdndice raw", row=positions[6][0], col=positions[6][1])
+    figure.update_xaxes(title_text="\u00cdndice original", row=positions[6][0], col=positions[6][1])
     figure.update_yaxes(
         title_text="\u00cdndice sin precios cr\u00edticos",
         row=positions[6][0],
@@ -599,26 +758,42 @@ def _write_dashboard(
     )
     figure.update_xaxes(tickformat="%d %b", row=positions[2][0], col=positions[2][1])
     figure.update_xaxes(tickformat="%d %b", row=positions[7][0], col=positions[7][1])
+    figure.update_xaxes(
+        gridcolor="rgba(158,246,229,.11)",
+        linecolor="rgba(158,246,229,.25)",
+        zerolinecolor="rgba(158,246,229,.25)",
+        tickfont={"color": "#a5aeaa"},
+        title_font={"color": "#a5aeaa"},
+    )
+    figure.update_yaxes(
+        gridcolor="rgba(158,246,229,.11)",
+        linecolor="rgba(158,246,229,.25)",
+        zerolinecolor="rgba(158,246,229,.25)",
+        tickfont={"color": "#a5aeaa"},
+        title_font={"color": "#a5aeaa"},
+    )
+    figure.update_annotations(font_color="#edf1ef")
     file_name = "dashboard_mobile.html" if mobile else "dashboard_pricing_canasta.html"
     path = OUTPUT_DIR / file_name
     figure.write_html(
         path,
         include_plotlyjs=True,
         full_html=True,
-        config={"responsive": True},
+        config=DASHBOARD_CONFIG,
         default_width="100%",
     )
-    _enhance_dashboard_html(path)
+    notices = (chain_notice, province_notice)
+    _enhance_dashboard_html(path, validation, notices)
 
     site_path = SITE_DIR / ("mobile.html" if mobile else "index.html")
     figure.write_html(
         site_path,
-        include_plotlyjs="cdn",
+        include_plotlyjs=True,
         full_html=True,
-        config={"responsive": True},
+        config=DASHBOARD_CONFIG,
         default_width="100%",
     )
-    _enhance_dashboard_html(site_path)
+    _enhance_dashboard_html(site_path, validation, notices)
     return path
 
 
@@ -626,7 +801,7 @@ def _write_executive_summary(frames: dict[str, pd.DataFrame], validation: Valida
     publishable_index = frames["index_daily"]
     publishable_index = publishable_index[publishable_index["publishable"]]
     if publishable_index.empty:
-        index_finding = "no hubo un indice comun publicable en la ventana."
+        index_finding = "no hubo un índice común publicable en la ventana."
     else:
         index_latest = publishable_index[
             publishable_index["snapshot_date"] == publishable_index["snapshot_date"].max()
@@ -634,50 +809,59 @@ def _write_executive_summary(frames: dict[str, pd.DataFrame], validation: Valida
         low_index, high_index = index_latest.iloc[0], index_latest.iloc[-1]
         index_finding = (
             f"sobre {int(low_index['common_gtins']):,} GTIN comunes, "
-            f"{low_index['banner_label']} presento el indice mas bajo "
-            f"({low_index['price_index']:.2f}) y {high_index['banner_label']} el mas alto "
+            f"{low_index['banner_label']} presentó el índice más bajo "
+            f"({low_index['price_index']:.2f}) y {high_index['banner_label']} el más alto "
             f"({high_index['price_index']:.2f}). La diferencia es descriptiva del panel "
-            "comun, no de todo el surtido."
+            "común, no de todo el surtido."
         )
 
     dispersion = frames["dispersion_entity"]
-    dispersion = dispersion[
-        (dispersion["snapshot_date"] == dispersion["snapshot_date"].max())
-        & (dispersion["coverage_status"] == "PUBLISHABLE")
-        & dispersion["median_dispersion_clean"].notna()
-    ]
-    chain_disp = dispersion[dispersion["dispersion_level"] == "BANNER"].sort_values(
+    chain_panel = _latest_publishable_level(dispersion, "BANNER")
+    province_panel = _latest_publishable_level(dispersion, "PROVINCE")
+    combo_panel = _latest_publishable_level(dispersion, "BANNER_PROVINCE")
+    chain_disp = chain_panel[chain_panel["median_dispersion_clean"].notna()].sort_values(
         "median_dispersion_clean"
     )
-    province_disp = dispersion[dispersion["dispersion_level"] == "PROVINCE"].sort_values(
+    province_disp = province_panel[
+        province_panel["median_dispersion_clean"].notna()
+    ].sort_values("median_dispersion_clean")
+    combo_disp = combo_panel[combo_panel["median_dispersion_clean"].notna()].sort_values(
         "median_dispersion_clean"
     )
-    combo_disp = dispersion[dispersion["dispersion_level"] == "BANNER_PROVINCE"].sort_values(
-        "median_dispersion_clean"
+    _, chain_context = _dispersion_panel_text(
+        "Dispersión por cadena", chain_panel, validation.as_of_date
+    )
+    _, province_context = _dispersion_panel_text(
+        "Dispersión por provincia", province_panel, validation.as_of_date
+    )
+    _, combo_context = _dispersion_panel_text(
+        "Dispersión cadena-provincia", combo_panel, validation.as_of_date
     )
     if chain_disp.empty:
-        chain_finding = "ninguna cadena alcanzo cobertura publicable en el ultimo corte."
+        chain_finding = chain_context
     else:
         high_chain_disp = chain_disp.iloc[-1]
         chain_finding = (
-            f"{high_chain_disp['banner_label']} tuvo la mayor dispersion mediana limpia "
+            f"{chain_context} {high_chain_disp['banner_label']} tuvo la mayor dispersión "
+            "mediana limpia "
             f"({high_chain_disp['median_dispersion_clean']:.1%}) sobre "
             f"{int(high_chain_disp['publishable_products']):,} productos publicables."
         )
     if province_disp.empty:
-        province_finding = "ninguna provincia alcanzo cobertura publicable en el ultimo corte."
+        province_finding = province_context
     else:
         high_province_disp = province_disp.iloc[-1]
         province_finding = (
-            f"{high_province_disp['provincia_codigo']} registro la mayor dispersion mediana "
+            f"{province_context} {high_province_disp['provincia_codigo']} registró la mayor "
+            "dispersión mediana "
             f"limpia ({high_province_disp['median_dispersion_clean']:.1%})."
         )
     if combo_disp.empty:
-        combo_finding = "Tampoco hubo combinaciones cadena-provincia publicables."
+        combo_finding = combo_context
     else:
         high_combo_disp = combo_disp.iloc[-1]
         combo_finding = (
-            f"La combinacion mas alta fue {high_combo_disp['banner_label']} / "
+            f"{combo_context} La combinación más alta fue {high_combo_disp['banner_label']} / "
             f"{high_combo_disp['provincia_codigo']} "
             f"({high_combo_disp['median_dispersion_clean']:.1%})."
         )
@@ -691,7 +875,7 @@ def _write_executive_summary(frames: dict[str, pd.DataFrame], validation: Valida
     banner_savings = savings[savings["comparison_level"] == "BANNER"]
     province_savings = savings[savings["comparison_level"] == "PROVINCE"]
     if banner_savings.empty:
-        banner_saving_text = "sin comparacion publicable entre cadenas"
+        banner_saving_text = "sin comparación publicable entre cadenas"
     else:
         banner_saving = banner_savings.iloc[0]
         banner_saving_text = (
@@ -699,7 +883,7 @@ def _write_executive_summary(frames: dict[str, pd.DataFrame], validation: Valida
             f"({banner_saving['potential_saving_pct']:.1f}%)"
         )
     if province_savings.empty:
-        province_saving_text = "sin comparacion publicable entre provincias"
+        province_saving_text = "sin comparación publicable entre provincias"
     else:
         province_saving = province_savings.iloc[0]
         province_saving_text = (
@@ -711,41 +895,41 @@ def _write_executive_summary(frames: dict[str, pd.DataFrame], validation: Valida
     sensitivity_text = (
         f"{max_sensitivity:.2f} puntos"
         if pd.notna(max_sensitivity)
-        else "sin estimacion publicable"
+        else "sin estimación publicable"
     )
     unhealthy = int((~frames["source_health"]["source_healthy"]).sum())
-    day_phrase = "1 dia nacional" if unhealthy == 1 else f"{unhealthy} dias nacionales"
+    day_phrase = "1 día nacional" if unhealthy == 1 else f"{unhealthy} días nacionales"
 
     content = f"""# Resumen ejecutivo
 
 ## Objetivo
 
-Comparar nivel de precios, dispersion y costo de una canasta exacta sin mezclar
-catalogos, presentaciones ni codigos locales.
+Comparar nivel de precios, dispersión y costo de una canasta exacta sin mezclar
+catálogos, presentaciones ni códigos locales.
 
 ## Hallazgos cuantificados
 
 1. **Nivel de precios:** {index_finding}
-2. **Dispersion por cadena:** {chain_finding}
-3. **Dispersion geografica:** {province_finding} {combo_finding}
+2. **Dispersión por cadena:** {chain_finding}
+3. **Dispersión geográfica:** {province_finding} {combo_finding}
 4. **Ahorro potencial de canasta:** entre cadenas publicables, la brecha es {banner_saving_text}. Entre provincias, {province_saving_text}.
-5. **Robustez y fuente:** excluir precios criticos cambio los indices como maximo {sensitivity_text}. Hubo {day_phrase} debajo del umbral de salud; esos cortes se identifican visualmente y no prueban cambios comerciales.
+5. **Robustez y fuente:** excluir precios críticos cambió los índices como máximo {sensitivity_text}. Hubo {day_phrase} debajo del umbral de salud; esos cortes se identifican visualmente y no prueban cambios comerciales.
 
 ## Acciones de negocio
 
-1. El responsable de pricing debe revisar primero los 15 drivers de mayor contribucion de cada cadena y confirmar si son decisiones comerciales o errores de escala.
-2. Category management debe usar `basket_candidate_review.csv` para evaluar sustituciones; la canasta publicada no cambia automaticamente.
-3. Las provincias y combinaciones con estado `SUPPRESSED` no deben aparecer en rankings; se requiere ampliar sucursales antes de decidir.
-4. Para negociar precios, priorizar GTIN con dispersion alta persistente durante varios dias y no picos de una sola fecha.
-5. Archivar al menos 28 dias antes de formular conclusiones estructurales o de tendencia.
+1. El responsable de pricing debe revisar primero los 15 impulsores de mayor contribución de cada cadena y confirmar si son decisiones comerciales o errores de escala.
+2. Gestión de categorías debe usar `basket_candidate_review.csv` para evaluar sustituciones; la canasta publicada no cambia automáticamente.
+3. Las provincias y combinaciones con estado `SUPPRESSED` no deben aparecer en clasificaciones; se requiere ampliar sucursales antes de decidir.
+4. Para negociar precios, priorizar GTIN con dispersión alta persistente durante varios días y no picos de una sola fecha.
+5. Archivar al menos 28 días antes de formular conclusiones estructurales o de tendencia.
 
-## Limitaciones especificas
+## Limitaciones específicas
 
-- El indice mide un panel comun con igual peso por producto y cadena; no representa participacion de mercado ni gasto del consumidor.
-- La dispersion P90-P10 describe precios publicados, no promociones ni precios efectivamente pagados.
-- El ahorro de canasta existe solo donde los ocho GTIN estan presentes; no se imputan faltantes.
-- El dato nacional es la red de sucursales observada y no una estimacion ponderada por poblacion.
-- Siete dias permiten describir el corte, no medir inflacion, estacionalidad o superioridad estructural.
+- El índice mide un panel común con igual peso por producto y cadena; no representa participación de mercado ni gasto del consumidor.
+- La dispersión P90-P10 describe precios publicados, no promociones ni precios efectivamente pagados.
+- El ahorro de canasta existe solo donde los ocho GTIN están presentes; no se imputan faltantes.
+- El dato nacional es la red de sucursales observada y no una estimación ponderada por población.
+- Siete días permiten describir el corte, no medir inflación, estacionalidad o superioridad estructural.
 """
     path = OUTPUT_DIR / "resumen_ejecutivo.md"
     path.write_text(content, encoding="utf-8")
