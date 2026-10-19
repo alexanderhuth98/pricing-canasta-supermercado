@@ -31,8 +31,9 @@ Estos archivos se conservan localmente e ignorados. Antes de crear el Release:
 6. Verificar `outputs/release-v2.0.0/SHA256SUMS.txt`.
 7. Crear un Release desde el commit etiquetado y adjuntar los cuatro archivos y sus hashes.
 
-El dashboard web liviano se publica desde `site/` mediante GitHub Pages. Usa Plotly CDN;
-los HTML del Release incluyen Plotly para funcionar sin conexión.
+El dashboard web se publica desde `site/` mediante GitHub Pages. Tanto esos documentos
+como los HTML del Release incluyen Plotly directamente (`include_plotlyjs=True`) y no
+dependen del CDN de Plotly.
 
 ## Controles previos
 

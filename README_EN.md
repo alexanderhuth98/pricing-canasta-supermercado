@@ -7,15 +7,26 @@
 [Versión en español](README.md)
 
 End-to-end Data Analytics portfolio project built from Argentina's official
-**Precios Claros - SEPA** national snapshots.
+**Precios Claros - SEPA** national snapshots. It matches exact products, applies
+publication gates, and delivers reproducible web and Power BI views.
 
-## Business question
+[Dashboard](https://alexanderhuth98.github.io/pricing-canasta-supermercado/) |
+[Release / PBIX](https://github.com/alexanderhuth98/pricing-canasta-supermercado/releases/latest) |
+[Validation](reports/2026-08-02/validation_report.md) |
+[Portfolio](https://alexanderhuth98.github.io/#proyectos)
 
-Which supermarket banners and provinces show the largest price differences, and
-what is the observed cost of an exactly comparable product basket during the latest
-available week?
+## Case in 30 seconds
 
-## Highlights
+| Stage | Summary |
+|---|---|
+| **Problem** | Compare supermarket banners on exact products without treating low-coverage panels as valid rankings. |
+| **Finding** | The latest comparable day contains `634 common GTINs`; the fixed basket differs by `ARS 5,163` (`15.1%`) across publishable banners. |
+| **Decision** | Use only results passing quality and coverage gates (`PUBLISHABLE`) and keep insufficient panels `SUPPRESSED`. |
+| **Limitation** | The window covers seven days. August 2 has no publishable dispersion and the latest comparable index is July 31; removing critical prices changed the index by at most `0.47` points. |
+
+![Executive dashboard](docs/images/dashboard_overview.png)
+
+## Technical scope
 
 - 7 national daily snapshots from July 27 to August 2, 2026.
 - 97,485,870 source price records loaded and reconciled with zero row loss.
@@ -28,11 +39,6 @@ available week?
 - A fixed eight-GTIN basket with no promotion prices, substitution, or imputation.
 - DuckDB marts, automated gates, Excel, desktop/mobile HTML dashboards, and a reproducible Power BI project.
 - Editable PBIP and validated PBIX with 14 tables, 9 relationships, 17 measures, and four report pages.
-
-The latest publishable index covers 634 common GTINs. Hipermercado Carrefour has the
-lowest level (96.98) and Jumbo the highest (103.36). The observed basket gap between
-the highest- and lowest-cost publishable banners is ARS 5,163 (15.1%). Confidence is
-`Medium` because source-health and quality warnings remain; seven days also limit structural claims.
 
 ## Power BI report
 
@@ -67,12 +73,13 @@ whose hashes are listed in `manifests/raw_sources.jsonl`; the official catalog r
 its resources and is not a historical archive.
 
 Raw ZIP files, intermediates and the DuckDB warehouse are excluded from Git. Curated
-aggregates live in `portfolio_data/`, reports in `reports/2026-08-02/`, the web dashboard
-in `site/`, and PBIX/XLSX/offline HTML files are distributed as GitHub Release assets.
+aggregates live in `portfolio_data/`, reports in `reports/2026-08-02/`, and the web
+dashboards in `site/` embed Plotly directly (`include_plotlyjs=True`) instead of loading
+it from a CDN. PBIX/XLSX/offline HTML files are distributed as GitHub Release assets.
 
 ## Quality and CI
 
-The repository includes 60 tests and enforces at least 80% coverage. GitHub Actions and
+The repository includes 64 tests and enforces at least 80% coverage. GitHub Actions and
 `.gitlab-ci.yml` use the locked environment for Ruff, pytest and dependency auditing;
 GitHub additionally checks local links, scans history for secrets and validates the
 versioned PBIP structure. Run `powerbi/validate_pbip.ps1` locally for static checks plus

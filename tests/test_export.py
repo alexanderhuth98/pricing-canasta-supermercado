@@ -135,6 +135,44 @@ def _validation(tmp_path) -> ValidationResult:
     )
 
 
+@pytest.mark.parametrize("file_name", ["index.html", "mobile.html"])
+def test_dashboard_metadata_canonical_and_description(tmp_path, file_name):
+    path = tmp_path / file_name
+    path.write_text(
+        '<html>\n<head><meta charset="utf-8" /></head>\n'
+        '<body><div id="chart"></div></body>\n</html>',
+        encoding="utf-8",
+    )
+
+    export_module._enhance_dashboard_html(
+        path,
+        _validation(tmp_path),
+        ("Dispersión por cadena: sin dato publicable en la ventana observada.",),
+    )
+
+    html = path.read_text(encoding="utf-8")
+    canonical = "https://alexanderhuth98.github.io/pricing-canasta-supermercado/"
+    image = "https://alexanderhuth98.github.io/assets/projects/pricing-dashboard.png"
+    title = "Pricing y canasta de supermercado | Dashboard"
+    assert html.startswith('<!doctype html>\n<html lang="es-AR">')
+    assert html.lower().count("<meta charset=") == 1
+    assert '<meta name="author" content="Alexander Huth">' in html
+    assert '<meta name="theme-color" content="#0b1111">' in html
+    assert f'<link rel="canonical" href="{canonical}">' in html
+    assert f'<meta property="og:url" content="{canonical}">' in html
+    assert f'<meta property="og:image" content="{image}">' in html
+    assert f'<meta property="og:title" content="{title}">' in html
+    assert '<meta property="og:type" content="website">' in html
+    assert '<meta name="twitter:card" content="summary_large_image">' in html
+    assert f'<meta name="twitter:image" content="{image}">' in html
+    assert f'<meta name="twitter:title" content="{title}">' in html
+    assert 'meta name="description"' in html
+    assert 'meta property="og:description"' in html
+    assert 'meta name="twitter:description"' in html
+    assert "índice comparable, canasta fija, dispersión, sensibilidad" in html
+    assert "Nivel de precios, dispersión y costo de una canasta comparable" in html
+
+
 def test_dispersion_uses_latest_publishable_date_per_level_and_keeps_empty_state():
     frame = pd.DataFrame(
         [
