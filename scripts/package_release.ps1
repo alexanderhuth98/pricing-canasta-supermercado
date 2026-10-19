@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$version = "v2.0.0"
+$version = "v2.1.0"
 $projectRoot = (Get-Location).Path
 $destination = Join-Path $projectRoot "outputs\release-$version"
 $assets = @(

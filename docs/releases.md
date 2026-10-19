@@ -3,7 +3,7 @@
 El repositorio mantiene el historial orientado a código y revisión. Los binarios y
 artefactos offline se publican como activos de una versión, no como blobs Git.
 
-## Activos de la versión `v2.0.0`
+## Activos de la versión `v2.1.0`
 
 - `powerbi/PricingCanasta.pbix`
 - `outputs/pricing_canasta_supermercado.xlsx`
@@ -28,7 +28,7 @@ Estos archivos se conservan localmente e ignorados. Antes de crear el Release:
    type scripts\package_release.ps1 | powershell.exe -NoProfile -Command -
    ```
 
-6. Verificar `outputs/release-v2.0.0/SHA256SUMS.txt`.
+6. Verificar `outputs/release-v2.1.0/SHA256SUMS.txt`.
 7. Crear un Release desde el commit etiquetado y adjuntar los cuatro archivos y sus hashes.
 
 El dashboard web se publica desde `site/` mediante GitHub Pages. Tanto esos documentos
@@ -46,3 +46,8 @@ git status --short --ignored
 
 No adjuntar raw, DuckDB, Parquet, `.pbi/`, temporales ni muestras de anomalías por
 sucursal.
+
+## Release anterior
+
+La release inmutable [`v2.0.0`](https://github.com/alexanderhuth98/pricing-canasta-supermercado/releases/tag/v2.0.0)
+conserva los artefactos publicados antes de la mejora del dashboard y de su presentación.

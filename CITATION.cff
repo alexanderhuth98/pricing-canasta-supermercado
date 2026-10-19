@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: "Huth"
     given-names: "Alexander"
-version: 2.0.0
+version: 2.1.0
 license: MIT
 repository-code: "https://github.com/alexanderhuth98/pricing-canasta-supermercado"
 url: "https://alexanderhuth98.github.io/pricing-canasta-supermercado/"
