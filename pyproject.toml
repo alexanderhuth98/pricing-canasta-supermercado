@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pricing-canasta-supermercado"
-version = "2.0.0"
+version = "2.1.0"
 description = "Pipeline reproducible para analizar precios y una canasta comparable de supermercados en Argentina."
 readme = "README.md"
 license = {file = "LICENSE"}
