@@ -6,26 +6,25 @@
 
 [English version](README_EN.md)
 
-Caso de Data Analytics sobre 97,5 millones de precios publicados por **Precios Claros
-- Base SEPA**. Compara cadenas con productos exactamente equivalentes, mide el costo de
-una canasta fija y controla cobertura, outliers y calidad antes de publicar rankings.
+Proyecto end-to-end de Data Analytics sobre snapshots nacionales de **Precios Claros
+- Base SEPA**. Compara cadenas con productos exactamente equivalentes, mide una canasta
+fija y controla cobertura, outliers y calidad antes de publicar rankings.
+
+[Dashboard](https://alexanderhuth98.github.io/pricing-canasta-supermercado/) |
+[Release / PBIX](https://github.com/alexanderhuth98/pricing-canasta-supermercado/releases/latest) |
+[Validación](reports/2026-08-02/validation_report.md) |
+[Portfolio](https://alexanderhuth98.github.io/#proyectos)
+
+## Caso en 30 segundos
+
+| Etapa | Síntesis |
+|---|---|
+| **Problema** | Comparar cadenas sin mezclar productos y evitar rankings cuando la cobertura no supera los gates definidos. |
+| **Hallazgo** | El último día comparable reunió `634 GTIN comunes`; entre cadenas publicables, la canasta fija mostró una brecha de `$5.163` (`15,1%`). |
+| **Decisión** | Usar sólo resultados que superan gates de calidad y cobertura (`PUBLISHABLE`) y mantener los paneles insuficientes como `SUPPRESSED`. |
+| **Limitación** | El corte cubre siete días. El `02/08` no tuvo dispersión publicable y el último índice comparable fue el `31/07`; excluir precios críticos cambió el índice como máximo `0,47` puntos. |
 
 ![Dashboard ejecutivo](docs/images/dashboard_overview.png)
-
-## Impacto en 60 segundos
-
-| Resultado | Hallazgo |
-|---|---|
-| Nivel de precios | Carrefour fue la cadena de menor índice en el último día comparable: `96,98`; Jumbo alcanzó `103,36`. |
-| Consistencia semanal | DIA tuvo el menor índice medio de los cinco días publicables (`96,38`), seguida por Carrefour (`96,89`). |
-| Ahorro de canasta | La mediana varió entre `$29.109` en Vea y `$34.272` en HiperChangomas: `$5.163` o `15,1%`. |
-| Robustez | Excluir precios críticos modificó el índice como máximo `0,47` puntos. |
-| Calidad | 94,6 millones de observaciones globales, cero duplicados del grano comparable y salud cadena-día de `95,9%`. |
-| Dispersión publicable | El último corte con entidades publicables fue el `31/07`: dispersión limpia mediana de `3,4%` y `29.812` conteos producto-entidad cubiertos. |
-| Limitación honesta | El `02/08` quedó totalmente `SUPPRESSED` para dispersión; no se fabricó un ranking con muestras insuficientes. |
-
-**Corte:** 27 de julio al 2 de agosto de 2026. El último día comparable del índice es
-el 31 de julio porque dos cadena-días no superaron el gate de cobertura.
 
 ## Preguntas de negocio
 
@@ -144,13 +143,14 @@ su disponibilidad histórica. Consulte [acceso a datos](docs/data_access.md).
 ## Publicación
 
 - Git versiona código, SQL, tests, documentación, PBIP textual y CSV agregados curados.
-- GitHub Pages publica `site/`, con Plotly cargado desde CDN.
+- GitHub Pages publica `site/`; cada HTML incluye Plotly directamente
+  (`include_plotlyjs=True`) y no depende del CDN de Plotly.
 - PBIX, XLSX y HTML autocontenidos se distribuyen como activos de GitHub Releases.
 - Raw, DuckDB, Parquet, temporales y muestras detalladas permanecen fuera del historial.
 
 ## Verificación
 
-- 60 pruebas automatizadas.
+- 64 pruebas automatizadas.
 - Cobertura de código superior al 80%.
 - Cero quality gates altos en el build publicado.
 - 97.485.870 filas fuente reconciliadas sin pérdida.

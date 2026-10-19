@@ -1174,7 +1174,7 @@ mismo indicador.
   --cov-fail-under=80
 ```
 
-Estado verificado: 60 pruebas y cobertura total superior al 80%.
+Estado verificado: 64 pruebas y cobertura total superior al 80%.
 
 ### 19.2 Cobertura funcional
 

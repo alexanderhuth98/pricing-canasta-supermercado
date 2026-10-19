@@ -348,13 +348,38 @@ def _enhance_dashboard_html(
     path: Path, validation: ValidationResult, panel_notices: tuple[str, ...]
 ) -> None:
     html = path.read_text(encoding="utf-8")
+    html = html.lstrip()
+    if not html.lower().startswith("<!doctype html>"):
+        html = "<!doctype html>\n" + html
+    for charset_tag in ('<meta charset="utf-8" />', '<meta charset="utf-8">'):
+        html = html.replace(charset_tag, "", 1)
     html = html.replace("<html>", '<html lang="es-AR">', 1)
+    title = "Pricing y canasta de supermercado | Dashboard"
+    description = (
+        "Dashboard interactivo de precios de supermercados en Argentina: índice comparable, "
+        "canasta fija, dispersión, sensibilidad y controles de cobertura."
+    )
+    canonical_url = "https://alexanderhuth98.github.io/pricing-canasta-supermercado/"
+    image_url = "https://alexanderhuth98.github.io/assets/projects/pricing-dashboard.png"
     html = html.replace(
         "<head>",
         (
-            '<head><meta name="viewport" '
-            'content="width=device-width, initial-scale=1">'
-            "<title>Pricing y canasta de supermercado</title>"
+            '<head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width, initial-scale=1">'
+            f'<meta name="description" content="{description}">'
+            '<meta name="author" content="Alexander Huth">'
+            '<meta name="theme-color" content="#0b1111">'
+            f'<link rel="canonical" href="{canonical_url}">'
+            f'<meta property="og:title" content="{title}">'
+            f'<meta property="og:description" content="{description}">'
+            '<meta property="og:type" content="website">'
+            f'<meta property="og:url" content="{canonical_url}">'
+            f'<meta property="og:image" content="{image_url}">'
+            '<meta name="twitter:card" content="summary_large_image">'
+            f'<meta name="twitter:title" content="{title}">'
+            f'<meta name="twitter:description" content="{description}">'
+            f'<meta name="twitter:image" content="{image_url}">'
+            f"<title>{title}</title>"
             "<style>@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:"
             "wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');"
             ":root{--bg:#0b1111;--bg-deep:#080d0d;--surface:#171d1e;"
