@@ -38,5 +38,6 @@ LICENSE text eol=lf
 
 portfolio_data/*.csv linguist-generated=true
 site/*.html linguist-generated=true
+site/plotly.min.js -diff linguist-generated=true
 powerbi/PricingCanasta.Report/** linguist-generated=true
 powerbi/PricingCanasta.SemanticModel/model.bim linguist-generated=true

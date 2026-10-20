@@ -56,6 +56,8 @@ def test_export_generates_excel_dashboards_parquet_and_report(fixture_raw, tmp_p
     assert (output_dir / "dashboard_mobile.html").stat().st_size > 0
     assert (site_dir / "index.html").stat().st_size > 0
     assert (site_dir / "mobile.html").stat().st_size > 0
+    assert (site_dir / "plotly.min.js").stat().st_size > 0
+    assert (site_dir / "404.html").stat().st_size > 0
     assert (output_dir / "resumen_ejecutivo.md").stat().st_size > 0
     summary = (output_dir / "resumen_ejecutivo.md").read_text(encoding="utf-8").lower()
     assert "nan%" not in summary
@@ -161,6 +163,7 @@ def test_dashboard_metadata_canonical_and_description(tmp_path, file_name):
     assert f'<link rel="canonical" href="{canonical}">' in html
     assert f'<meta property="og:url" content="{canonical}">' in html
     assert f'<meta property="og:image" content="{image}">' in html
+    assert '<meta property="og:image:alt"' in html
     assert f'<meta property="og:title" content="{title}">' in html
     assert '<meta property="og:type" content="website">' in html
     assert '<meta name="twitter:card" content="summary_large_image">' in html
@@ -169,6 +172,8 @@ def test_dashboard_metadata_canonical_and_description(tmp_path, file_name):
     assert 'meta name="description"' in html
     assert 'meta property="og:description"' in html
     assert 'meta name="twitter:description"' in html
+    assert '<link rel="icon" href="/favicon.ico" sizes="any">' in html
+    assert '<meta name="referrer" content="strict-origin-when-cross-origin">' in html
     assert "índice comparable, canasta fija, dispersión, sensibilidad" in html
     assert "Nivel de precios, dispersión y costo de una canasta comparable" in html
 
@@ -282,3 +287,7 @@ def test_dashboard_identity_zoom_reset_dates_and_self_contained_site(tmp_path, m
     assert "autoScale2d" in html
     assert "resetScale2d" in html
     assert 'src="https://cdn.plot.ly' not in html
+    assert 'src="plotly.min.js"' in html
+    assert 'id="dashboard-status"' in html
+    assert "No se pudieron cargar los gráficos" in html
+    assert 'data-goatcounter="https://alexanderhuth98.goatcounter.com/count"' in html

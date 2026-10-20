@@ -368,17 +368,23 @@ def _enhance_dashboard_html(
             '<meta name="viewport" content="width=device-width, initial-scale=1">'
             f'<meta name="description" content="{description}">'
             '<meta name="author" content="Alexander Huth">'
+            '<meta name="referrer" content="strict-origin-when-cross-origin">'
             '<meta name="theme-color" content="#0b1111">'
+            '<link rel="icon" href="/favicon.ico" sizes="any">'
+            '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">'
+            '<link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">'
             f'<link rel="canonical" href="{canonical_url}">'
             f'<meta property="og:title" content="{title}">'
             f'<meta property="og:description" content="{description}">'
             '<meta property="og:type" content="website">'
             f'<meta property="og:url" content="{canonical_url}">'
             f'<meta property="og:image" content="{image_url}">'
+            '<meta property="og:image:alt" content="Dashboard de pricing y canasta de supermercado">'
             '<meta name="twitter:card" content="summary_large_image">'
             f'<meta name="twitter:title" content="{title}">'
             f'<meta name="twitter:description" content="{description}">'
             f'<meta name="twitter:image" content="{image_url}">'
+            '<meta name="twitter:image:alt" content="Dashboard de pricing y canasta de supermercado">'
             f"<title>{title}</title>"
             "<style>@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:"
             "wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');"
@@ -423,6 +429,10 @@ def _enhance_dashboard_html(
             ".plotly-graph-div{width:100%!important;max-width:100%;"
             "border:1px solid var(--border);background:var(--surface-soft);box-shadow:none;}"
             ".modebar{opacity:1!important;}"
+            ".dashboard-status{margin:0;padding:12px 16px;color:var(--dim);"
+            "background:var(--surface-soft);border:1px solid var(--border);font-size:.85rem;}"
+            ".dashboard-status:empty{display:none;}.dashboard-status.error{color:var(--amber);"
+            "border-color:rgba(243,206,98,.45);}"
             ".sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;"
             "overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}"
             "@media(max-width:700px){.site-header,.dashboard-shell{width:min(100% - 24px,1480px);}"
@@ -444,9 +454,13 @@ def _enhance_dashboard_html(
             f'<div class="site-meta"><span>Corte global: {cut_label}</span>'
             "<span>Fuente: Precios Claros · Secretaría de Industria y Comercio</span>"
             f"<span>Confianza del corte: {validation.confidence}</span></div>"
-            '<a class="back-link" href="https://alexanderhuth98.github.io/#proyectos">'
+            '<a class="back-link" href="https://alexanderhuth98.github.io/#proyectos" '
+            'data-goatcounter-click="back-to-portfolio-pricing">'
             "← Volver a proyectos</a></header>"
-            '<main class="dashboard-shell"><p class="sr-only">Tablero de nivel de precios, '
+            '<main class="dashboard-shell"><noscript><p class="dashboard-status error">'
+            "Este tablero necesita JavaScript para mostrar los gráficos interactivos.</p></noscript>"
+            '<p id="dashboard-status" class="dashboard-status" role="status" aria-live="polite"></p>'
+            '<p class="sr-only">Tablero de nivel de precios, '
             "canasta, dispersión, sensibilidad y cobertura. El índice identifica el último día "
             "comparable. Cada panel informa su fecha efectiva; los datos suprimidos no se incluyen "
             "en clasificaciones.</p>"
@@ -459,29 +473,47 @@ def _enhance_dashboard_html(
     )
     html = html.replace(
         '<div id="',
-        '<div role="img" aria-label="Dashboard interactivo de pricing y canasta" id="',
+        '<div role="region" aria-label="Dashboard interactivo de pricing y canasta" id="',
         1,
     )
     html = html.replace(
         "</body>",
         """<script>
 (() => {
+    const status = document.querySelector('#dashboard-status');
     const button = document.querySelector('.reset-view');
     const graph = document.querySelector('.plotly-graph-div');
-    if (!button || !graph) return;
+    if (!window.Plotly || !graph) {
+        if (status) {
+            status.classList.add('error');
+            status.textContent = 'No se pudieron cargar los gráficos. Recargá la página para volver a intentarlo.';
+        }
+        return;
+    }
+    if (!button) return;
     button.addEventListener('click', () => {
         const update = {autosize: true};
         Object.keys(graph.layout || {}).forEach((key) => {
             if (/^[xy]axis\\d*$/.test(key)) update[`${key}.autorange`] = true;
         });
-        Plotly.relayout(graph, update);
+        Plotly.relayout(graph, update).catch(() => {
+            if (status) {
+                status.classList.add('error');
+                status.textContent = 'No se pudo restablecer la vista del gráfico.';
+            }
+        });
     });
 })();
-</script></main></body>""",
+</script><script data-goatcounter="https://alexanderhuth98.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script></main></body>""",
         1,
     )
     html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
     path.write_text(html, encoding="utf-8", newline="\n")
+
+
+def _render_not_found() -> str:
+    return """<!doctype html>
+<html lang="es-AR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="theme-color" content="#0b1111"><link rel="icon" href="/favicon.ico" sizes="any"><title>Página no encontrada | Pricing y canasta</title><style>body{display:grid;min-height:100vh;margin:0;place-items:center;color:#edf1ef;background:#0b1111;font:16px/1.6 Arial,sans-serif}main{width:min(680px,calc(100% - 40px));padding:48px;background:#171d1e;border:1px solid rgba(158,246,229,.25)}p{color:#a5aeaa}a{color:#9ef6e5}h1{font-size:clamp(2.5rem,8vw,5rem);line-height:1}</style></head><body><main><strong>ERROR / 404</strong><h1>Página no encontrada.</h1><p>El recurso solicitado no existe o cambió de ubicación.</p><a href="https://alexanderhuth98.github.io/pricing-canasta-supermercado/">Volver al dashboard</a></main><script data-goatcounter="https://alexanderhuth98.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script></body></html>\n"""
 
 
 def _write_dashboard(
@@ -801,7 +833,7 @@ def _write_dashboard(
     path = OUTPUT_DIR / file_name
     figure.write_html(
         path,
-        include_plotlyjs=True,
+        include_plotlyjs="directory",
         full_html=True,
         config=DASHBOARD_CONFIG,
         default_width="100%",
@@ -812,7 +844,7 @@ def _write_dashboard(
     site_path = SITE_DIR / ("mobile.html" if mobile else "index.html")
     figure.write_html(
         site_path,
-        include_plotlyjs=True,
+        include_plotlyjs="directory",
         full_html=True,
         config=DASHBOARD_CONFIG,
         default_width="100%",
@@ -969,6 +1001,7 @@ def export_all(database_path: Path = DATABASE_PATH) -> None:
         excel_path = _write_excel(frames, validation)
         dashboard_path = _write_dashboard(frames, validation)
         mobile_path = _write_dashboard(frames, validation, mobile=True)
+        (SITE_DIR / "404.html").write_text(_render_not_found(), encoding="utf-8")
         summary_path = _write_executive_summary(frames, validation)
         metadata = {
             "generated_at": datetime.now(UTC).isoformat(),
