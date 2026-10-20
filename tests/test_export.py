@@ -172,7 +172,7 @@ def test_dashboard_metadata_canonical_and_description(tmp_path, file_name):
     assert 'meta name="description"' in html
     assert 'meta property="og:description"' in html
     assert 'meta name="twitter:description"' in html
-    assert '<link rel="icon" href="/favicon.ico" sizes="any">' in html
+    assert '<link rel="icon" href="https://alexanderhuth98.github.io/favicon.ico"' in html
     assert '<meta name="referrer" content="strict-origin-when-cross-origin">' in html
     assert "índice comparable, canasta fija, dispersión, sensibilidad" in html
     assert "Nivel de precios, dispersión y costo de una canasta comparable" in html

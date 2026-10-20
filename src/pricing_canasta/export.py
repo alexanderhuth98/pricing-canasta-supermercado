@@ -370,9 +370,9 @@ def _enhance_dashboard_html(
             '<meta name="author" content="Alexander Huth">'
             '<meta name="referrer" content="strict-origin-when-cross-origin">'
             '<meta name="theme-color" content="#0b1111">'
-            '<link rel="icon" href="/favicon.ico" sizes="any">'
-            '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">'
-            '<link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">'
+            '<link rel="icon" href="https://alexanderhuth98.github.io/favicon.ico" sizes="any">'
+            '<link rel="icon" type="image/png" sizes="32x32" href="https://alexanderhuth98.github.io/favicon-32x32.png">'
+            '<link rel="apple-touch-icon" sizes="180x180" href="https://alexanderhuth98.github.io/apple-icon-180x180.png">'
             f'<link rel="canonical" href="{canonical_url}">'
             f'<meta property="og:title" content="{title}">'
             f'<meta property="og:description" content="{description}">'
@@ -513,7 +513,7 @@ def _enhance_dashboard_html(
 
 def _render_not_found() -> str:
     return """<!doctype html>
-<html lang="es-AR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="theme-color" content="#0b1111"><link rel="icon" href="/favicon.ico" sizes="any"><title>Página no encontrada | Pricing y canasta</title><style>body{display:grid;min-height:100vh;margin:0;place-items:center;color:#edf1ef;background:#0b1111;font:16px/1.6 Arial,sans-serif}main{width:min(680px,calc(100% - 40px));padding:48px;background:#171d1e;border:1px solid rgba(158,246,229,.25)}p{color:#a5aeaa}a{color:#9ef6e5}h1{font-size:clamp(2.5rem,8vw,5rem);line-height:1}</style></head><body><main><strong>ERROR / 404</strong><h1>Página no encontrada.</h1><p>El recurso solicitado no existe o cambió de ubicación.</p><a href="https://alexanderhuth98.github.io/pricing-canasta-supermercado/">Volver al dashboard</a></main><script data-goatcounter="https://alexanderhuth98.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script></body></html>\n"""
+<html lang="es-AR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="theme-color" content="#0b1111"><link rel="icon" href="https://alexanderhuth98.github.io/favicon.ico" sizes="any"><title>Página no encontrada | Pricing y canasta</title><style>body{display:grid;min-height:100vh;margin:0;place-items:center;color:#edf1ef;background:#0b1111;font:16px/1.6 Arial,sans-serif}main{width:min(680px,calc(100% - 40px));padding:48px;background:#171d1e;border:1px solid rgba(158,246,229,.25)}p{color:#a5aeaa}a{color:#9ef6e5}h1{font-size:clamp(2.5rem,8vw,5rem);line-height:1}</style></head><body><main><strong>ERROR / 404</strong><h1>Página no encontrada.</h1><p>El recurso solicitado no existe o cambió de ubicación.</p><a href="https://alexanderhuth98.github.io/pricing-canasta-supermercado/">Volver al dashboard</a></main><script data-goatcounter="https://alexanderhuth98.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script></body></html>\n"""
 
 
 def _write_dashboard(
