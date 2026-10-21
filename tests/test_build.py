@@ -3,7 +3,13 @@ from datetime import date
 import duckdb
 import pytest
 
-from pricing_canasta.build import EXPECTED_QUALITY_CHECKS, build_analytics
+from pricing_canasta.build import (
+    EXPECTED_QUALITY_CHECKS,
+    _split_sql,
+    _statement_label,
+    build_analytics,
+)
+from pricing_canasta.config import SQL_DIR
 from pricing_canasta.ingest import connect, ingest_snapshot
 from pricing_canasta.validate import validate
 
@@ -129,6 +135,119 @@ def test_invalid_geography_never_becomes_publishable(fixture_raw, tmp_path):
         )
     finally:
         connection.close()
+
+
+def test_store_count_publication_boundary_for_dispersion_and_basket(fixture_raw, tmp_path):
+    _, archives = fixture_raw
+    database = tmp_path / "coverage_boundary.duckdb"
+    _ingest_fixture(database, archives, tmp_path)
+
+    connection = duckdb.connect(str(database))
+    try:
+        connection.execute(
+            """
+            UPDATE fact_price
+            SET precio_lista_valido = false
+            WHERE snapshot_date = DATE '2026-08-02'
+              AND id_comercio = '12' AND id_bandera = '1' AND id_sucursal = '20'
+            """
+        )
+    finally:
+        connection.close()
+
+    build_analytics(
+        as_of=date(2026, 8, 2),
+        database_path=database,
+        reference_date=date(2026, 8, 2),
+    )
+
+    connection = duckdb.connect(str(database), read_only=True)
+    try:
+        dispersion = connection.execute(
+            """
+            SELECT snapshot_date, min(stores_clean), max(stores_clean),
+                   min(coverage_status), max(coverage_status)
+            FROM mart_price_dispersion_daily
+            WHERE dispersion_level = 'BANNER'
+              AND id_comercio = '12' AND id_bandera = '1'
+              AND snapshot_date IN (DATE '2026-08-01', DATE '2026-08-02')
+            GROUP BY snapshot_date
+            ORDER BY snapshot_date
+            """
+        ).fetchall()
+        basket = connection.execute(
+            """
+            SELECT snapshot_date, complete_stores, coverage_status
+            FROM mart_basket_banner_daily
+            WHERE id_comercio = '12' AND id_bandera = '1'
+              AND snapshot_date IN (DATE '2026-08-01', DATE '2026-08-02')
+            ORDER BY snapshot_date
+            """
+        ).fetchall()
+    finally:
+        connection.close()
+
+    assert dispersion == [
+        (date(2026, 8, 1), 20, 20, "PUBLISHABLE", "PUBLISHABLE"),
+        (date(2026, 8, 2), 19, 19, "DIRECTIONAL", "DIRECTIONAL"),
+    ]
+    assert basket == [
+        (date(2026, 8, 1), 20, "PUBLISHABLE"),
+        (date(2026, 8, 2), 19, "DIRECTIONAL"),
+    ]
+
+
+def test_index_publication_requires_500_common_gtins():
+    connection = duckdb.connect()
+    try:
+        connection.execute(
+            """
+            CREATE TABLE mart_banner_product_daily AS
+            SELECT
+                '12345678-1234-1234-1234-123456789abc'::UUID AS build_id,
+                'scope'::VARCHAR AS scope_version,
+                DATE '2026-08-01' AS snapshot_date, '12'::VARCHAR AS id_comercio,
+                '1'::VARCHAR AS id_bandera, lpad(i::VARCHAR, 14, '0') AS gtin14
+            FROM range(500) AS products(i)
+            """
+        )
+        connection.execute(
+            """
+            INSERT INTO mart_banner_product_daily
+            SELECT build_id, scope_version, DATE '2026-08-02', id_comercio, id_bandera, gtin14
+            FROM mart_banner_product_daily
+            """
+        )
+        connection.execute(
+            """
+            CREATE TABLE mart_banner_index_relative_daily AS
+            SELECT *, 1.0::DOUBLE AS price_relative
+            FROM mart_banner_product_daily
+            WHERE snapshot_date = DATE '2026-08-02'
+               OR (snapshot_date = DATE '2026-08-01' AND gtin14 != '00000000000499')
+            """
+        )
+        index_statement = next(
+            statement
+            for statement in _split_sql((SQL_DIR / "02_marts.sql").read_text(encoding="utf-8"))
+            if _statement_label(statement) == "mart_banner_index_daily"
+        )
+        connection.execute(index_statement)
+
+        publication = connection.execute(
+            """
+            SELECT snapshot_date, common_gtins, publishable
+            FROM mart_banner_index_daily
+            ORDER BY snapshot_date
+            """
+        ).fetchall()
+    finally:
+        connection.close()
+
+    assert publication == [
+        (date(2026, 8, 1), 499, False),
+        (date(2026, 8, 2), 500, True),
+    ]
 
 
 def test_as_of_requires_exact_seven_day_window(fixture_raw, tmp_path):

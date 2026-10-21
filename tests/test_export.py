@@ -23,6 +23,24 @@ def test_excel_value_preserves_numeric_and_safe_string_cells():
     assert _excel_value("safe text") == "safe text"
 
 
+def test_export_stops_before_reading_or_writing_when_validation_fails(tmp_path, monkeypatch):
+    def fail_validation(**_kwargs):
+        raise RuntimeError("Quality gate bloqueado")
+
+    def unexpected_connection(*_args, **_kwargs):
+        pytest.fail("export must not open the warehouse after failed validation")
+
+    monkeypatch.setattr(export_module, "ensure_directories", lambda: None)
+    monkeypatch.setattr(export_module, "validate", fail_validation)
+    monkeypatch.setattr(export_module.duckdb, "connect", unexpected_connection)
+    monkeypatch.setattr(export_module, "OUTPUT_DIR", tmp_path)
+
+    with pytest.raises(RuntimeError, match="Quality gate bloqueado"):
+        export_all(database_path=tmp_path / "warehouse.duckdb")
+
+    assert list(tmp_path.iterdir()) == []
+
+
 def test_export_generates_excel_dashboards_parquet_and_report(fixture_raw, tmp_path, monkeypatch):
     _, archives = fixture_raw
     database = tmp_path / "export.duckdb"

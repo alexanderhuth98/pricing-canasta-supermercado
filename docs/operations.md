@@ -17,7 +17,21 @@ Desde la raíz del repositorio:
 uv sync --extra dev --locked
 uv pip check
 uv run pytest -q
+npm ci
+npx playwright install chromium
+npm run test:e2e
 ```
+
+Las pruebas de navegador levantan `site/` con `python -m http.server` y ejecutan Chromium
+en perfiles de escritorio y móvil. Para comprobar el mismo smoke contra un despliegue:
+
+```powershell
+$env:E2E_BASE_URL = "https://example.test/pricing-canasta-supermercado/"
+npx playwright test --project=desktop-chromium --grep "@smoke"
+```
+
+Fuentes web y analítica son opcionales en estas pruebas; Plotly siempre se carga desde el
+artefacto local `site/plotly.min.js`.
 
 Antes de procesar datos, confirme espacio suficiente, acceso de escritura a `data/` y
 ausencia de otro proceso Python o DuckDB que use el mismo warehouse. Los raw, temporales

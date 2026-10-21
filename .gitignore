@@ -23,6 +23,11 @@ htmlcov/
 dist/
 build/
 
+# Node and browser tests
+node_modules/
+playwright-report/
+test-results/
+
 # Raw, interim and analytical storage
 /data/
 *.duckdb
